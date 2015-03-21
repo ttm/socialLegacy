@@ -1,0 +1,32 @@
+==================================================================
+Social participation data analysis and exploitation
+==================================================================
+
+This project gathers social data and routines for analysis and exploitation. At the most fundamental level, social participation linked data is accessed and analyzed. Public data, such as provided by the Gmane database or donated profiles from private networks (e.g. Facebook), or even gathered by Twitter, is incorporated as RDF in the Social Graph considered. Observance of stability and the synthesis of audiovisual artifacts eases observation, probing and exploitation.
+
+Usage example
+=================
+Download messages from one GMANE list:
+
+.. code:: python
+
+    import social as S
+
+    # Free SKETCH. This is not the toolbox.
+
+    S.download() # download ontologies and data
+
+    S.generalStats() # print number of triples, individuals, etc.
+
+    data=S.data()
+
+    d1=S.makeBasicDatastructures(data["participa"])
+    d2=S.makeBasicDatastructures(data["aa"])
+    d3=S.makeBasicDatastructures(data["cd"])
+
+    S.Analyze()
+
+    # use the gmane python package to analyse network structure
+
+
+    # Enjoy!
