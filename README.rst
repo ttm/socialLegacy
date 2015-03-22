@@ -12,7 +12,16 @@ Download messages from one GMANE list:
 
     import social as S
 
-    # Free SKETCH. This is not the toolbox.
+    # put facebook user and password in ~/.social/fb/profile
+    # or login on the browser window that will appear
+    # or input login as arguments:
+    sb=S.ScrapyBrowser()
+    # input user id and returns the friend ids (and names...)
+    friends=sb.getFriends()
+
+    # more ***in construction***
+
+    # SKETCH. This is not the toolbox.
 
     S.download() # download ontologies and data
 
@@ -27,6 +36,5 @@ Download messages from one GMANE list:
     S.Analyze()
 
     # use the gmane python package to analyse network structure
-
 
     # Enjoy!

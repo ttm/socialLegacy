@@ -1,0 +1,5 @@
+*.swp
+ipython_log.py
+dist/
+*.egg-info
+__pycache__
