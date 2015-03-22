@@ -1,4 +1,4 @@
-import time, os, pickle
+import time, os, pickle, multiprocessing as mp
 from splinter import Browser
 
 class ScrapyBrowser:
@@ -14,22 +14,17 @@ class ScrapyBrowser:
         url="http://facebook.com"
         browser.visit(url)
         if (not user_email) or (not user_password):
-            input("==> Input user and password and login, please.\
+            input("\n\n==> Input user and password and login, please.\
                     and then press <enter>")
         else:
             browser.fill("email",user_email)
             browser.fill("pass",user_password)
             browser.find_by_value("Log In").click()
-    def go(self,url):
-        """Ensure the browser goes to the link provided"""
-        # make async browser visit.
-        # each 2 seconds, check if browser is on correct link
-        # else restart async process
-        pass
     def getFriends(self,user_id="astronauta.mecanico",write=True):
         """Returns user_ids (that you have access) of the friends of your friend with user_ids"""
         while user_id not in self.browser.url:
-            self.browser.visit("http://www.facebook.com/{}/friends".format(user_id))
+            self.browser.visit("http://www.facebook.com/{}/friends".format(user_id), wait_time=3)
+        #self.go("http://www.facebook.com/{}/friends".format(user_id))
         T=time.time()
         while 1:
             h1=self.browser.evaluate_script("document.body.scrollHeight")
@@ -39,8 +34,6 @@ class ScrapyBrowser:
                 T=time.time()
             elif time.time()-T>10:
                 break
-
-        # find stop condition
         #links=self.browser.find_link_by_partial_href("hc_location=friends_tab")
         links=self.browser.find_by_css(".fcb")
         friends=[]
