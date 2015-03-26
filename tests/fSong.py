@@ -10,6 +10,6 @@ os.environ["PATH"]=ENV
 fg=S.GDFgraph() # graph should be on fg.G
 
 #song=S.FSong(fg.G,"fsongNew/",True,True)
-song=S.FSong(fg.G,"fsongNew/")
+song=S.FSong(fg.G,"fsongNew2/",True,True,False,True)
 
 

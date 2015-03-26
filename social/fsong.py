@@ -9,7 +9,7 @@ sy.adsrSetup(A=20,D=20,R=10)
 class FSong:
     """Create song from undirected (friendship) network
     """
-    def __init__(self, network,basedir="fsong/",clean=False,render_images=False,make_video=False):
+    def __init__(self, network,basedir="fsong/",clean=False,render_images=False,render_images2=False,make_video=False):
         os.system("mkdir {}".format(basedir))
         if clean:
             os.system("rm {}*".format(basedir))
@@ -20,6 +20,11 @@ class FSong:
             self.makeImages()
         self.make_video=make_video
         self.makeSong()
+        if render_images2:
+            self.makeImages2()
+            self.makeSong2()
+    def makeSong2(self):
+        pass
     def makePartitions(self):
         """Make partitions with gmane help.
         """
@@ -54,6 +59,8 @@ class FSong:
             self.plotGraph("reversed",sector,"sector{:02}R.png".format(i))
             self.plotGraph("plain", n.setdiff1d(agents,sector),"sector{:02}N.png".format(i))
             self.plotGraph("reversed",n.setdiff1d(agents,sector),"sector{:02}RN.png".format(i))
+        self.plotGraph("plain",   [],"BLANK.png")
+    def makeImages2(self):
         for i, node in enumerate(self.nm.nodes_):
             self.plotGraph("plain",   [node],"lonely{:09}.png".format(i))
             self.plotGraph("reversed",[node],"lonely{:09}R.png".format(i))
@@ -152,7 +159,7 @@ class FSong:
                 durations=[0.75,0.25,0.75,0.25,2.]) # cai para sensível
 
         self.iS3=mpy.ImageSequenceClip(
-                          [self.basedir+"lonely000000001.png",
+                          [self.basedir+"BLANK.png",
                            self.basedir+self.sectors[0],
                            self.basedir+self.sectors[1],
                            self.basedir+self.sectors[1],
@@ -171,7 +178,7 @@ class FSong:
                            self.basedir+self.sectors[0], # 2 8
                            self.basedir+self.sectors[3], # 2 7
                            self.basedir+self.sectors[0], # 2 -1
-                          self.basedir+"lonely000000001.png",# 2
+                          self.basedir+"BLANK.png",# 2
                            ],
                 durations=[1,0.5,0.5,.75,
                               .25,1., 2.,2.,2.,2.]) # [0,7,11,0]
@@ -234,4 +241,5 @@ class FSong:
         """
         aclip=mpy.AudioFileClip("sound.wav")
         self.iS=self.iS.set_audio(aclip)
-        self.iS.write_videofile("aquiLL.webm",15,audio=True)
+        self.iS.write_videofile("mixedVideo.webm",15,audio=True)
+        print("wrote "+"mixedVideo.webm")

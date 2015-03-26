@@ -19,21 +19,28 @@ Download messages from one GMANE list:
     # input user id and returns the friend ids (and names...)
     friends=sb.getFriends()
 
+    # To load GDF file:
+    fg=S.GDFgraph("../data/RenatoFabbri06022014.gdf") # graph should be on fg.G
+    # To make an abstract animtion with it:
+    song=S.FSong(fg.G,"fsong/",True,True,False,True)
+    # Check mixedVideo.webm
+
     # more ***in construction***
 
+    ##########################################
     # SKETCH. This is not the toolbox.
 
-    S.download() # download ontologies and data
+    #S.download() # download ontologies and data
 
-    S.generalStats() # print number of triples, individuals, etc.
+    #S.generalStats() # print number of triples, individuals, etc.
 
-    data=S.data()
+    #data=S.data()
 
-    d1=S.makeBasicDatastructures(data["participa"])
-    d2=S.makeBasicDatastructures(data["aa"])
-    d3=S.makeBasicDatastructures(data["cd"])
+    #d1=S.makeBasicDatastructures(data["participa"])
+    #d2=S.makeBasicDatastructures(data["aa"])
+    #d3=S.makeBasicDatastructures(data["cd"])
 
-    S.Analyze()
+    #S.Analyze()
 
     # use the gmane python package to analyse network structure
 
