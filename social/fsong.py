@@ -9,7 +9,7 @@ sy.adsrSetup(A=20,D=20,R=10)
 class FSong:
     """Create song from undirected (friendship) network
     """
-    def __init__(self, network,basedir="fsong/",clean=False,render_images=False):
+    def __init__(self, network,basedir="fsong/",clean=False,render_images=False,make_video=False):
         os.system("mkdir {}".format(basedir))
         if clean:
             os.system("rm {}*".format(basedir))
@@ -18,6 +18,7 @@ class FSong:
         self.makePartitions()
         if render_images:
             self.makeImages()
+        self.make_video=make_video
         self.makeSong()
     def makePartitions(self):
         """Make partitions with gmane help.
@@ -46,7 +47,7 @@ class FSong:
         # make function that accepts a mode, a sector
         # and nodes and edges True and False
         self.plotGraph()
-        self.plotGraph("reversed",filename="tgraphR")
+        self.plotGraph("reversed",filename="tgraphR.png")
         agents=n.concatenate(self.np.sectorialized_agents__)
         for i, sector in enumerate(self.np.sectorialized_agents__):
             self.plotGraph("plain",   sector,"sector{:02}.png".format(i))
@@ -120,7 +121,8 @@ class FSong:
         """
         self.makeVisualSong()
         self.makeAudibleSong()
-        self.Animation()
+        if self.make_video:
+            self.makeAnimation()
     def makeVisualSong(self):
         """Return a sequence of images and durations.
         """
@@ -130,7 +132,52 @@ class FSong:
         self.stairs.sort()
         self.sectors.sort()
         filenames=[self.basedir+i for i in self.sectors[:4]]
-        self.iS=mpy.ImageSequenceClip(filenames,durations=[1.5,2.5,.5,1.5])
+        self.iS0=mpy.ImageSequenceClip(filenames,durations=[1.5,2.5,.5,1.5])
+        self.iS1=mpy.ImageSequenceClip(
+                          [self.basedir+self.sectors[2],
+                           self.basedir+self.sectors[3],
+                           self.basedir+self.sectors[2],
+                           self.basedir+self.sectors[3],
+                           self.basedir+self.sectors[2],
+                           self.basedir+self.sectors[3],
+                           self.basedir+self.sectors[2],
+                           self.basedir+self.sectors[3]],
+                durations=[0.25]*8)
+        self.iS2=mpy.ImageSequenceClip(
+                          [self.basedir+self.sectors[2],
+                           self.basedir+self.sectors[3],
+                           self.basedir+self.sectors[2],
+                           self.basedir+self.sectors[3],
+                           self.basedir+self.sectors[0]],
+                durations=[0.75,0.25,0.75,0.25,2.]) # cai para sensível
+
+        self.iS3=mpy.ImageSequenceClip(
+                          [self.basedir+"lonely000000001.png",
+                           self.basedir+self.sectors[0],
+                           self.basedir+self.sectors[1],
+                           self.basedir+self.sectors[1],
+                           self.basedir+self.sectors[1],
+                           self.basedir+self.sectors[0],
+                           self.basedir+self.sectors[0]],
+                durations=[1,0.5,2.,.25,.25,1.75, 0.25]) # [-1,8]
+
+        self.iS4=mpy.ImageSequenceClip(
+                          [self.basedir+self.sectors[2], # 1
+                           self.basedir+self.sectors[3], # .5
+                           self.basedir+self.sectors[5], # .5
+                           self.basedir+self.sectors[2], # .75
+                           self.basedir+self.sectors[0], #.25
+                           self.basedir+self.sectors[2], # 1
+                           self.basedir+self.sectors[0], # 2 8
+                           self.basedir+self.sectors[3], # 2 7
+                           self.basedir+self.sectors[0], # 2 -1
+                          self.basedir+"lonely000000001.png",# 2
+                           ],
+                durations=[1,0.5,0.5,.75,
+                              .25,1., 2.,2.,2.,2.]) # [0,7,11,0]
+
+        self.iS=mpy.concatenate_videoclips((
+            self.iS0,self.iS1,self.iS2,self.iS3,self.iS4))
         # Clip with three first images3
         # each sector a sound
         # sweep from periphery to center
@@ -139,13 +186,50 @@ class FSong:
     def makeAudibleSong(self):
         """Use mass to render wav soundtrack.
         """
-        sound=n.hstack((sy.render(220,d=1.5),
+        sound0=n.hstack((sy.render(220,d=1.5),
                         sy.render(220*(2**(7/12)),d=2.5),
                         sy.render(220*(2**(-5/12)),d=.5),
                         sy.render(220*(2**(0/12)),d=1.5),
                         ))
+        sound1=n.hstack((sy.render(220*(2**(0/12)),d=.25),
+                         sy.render(220*(2**(7/12)),d=.25),
+                         sy.render(220*(2**(0/12)),d=.25),
+                         sy.render(220*(2**(7/12)),d=.25),
+                         sy.render(220*(2**(0/12)),d=.25),
+                         sy.render(220*(2**(7/12)),d=.25),
+                         sy.render(220*(2**(0/12)),d=.25),
+                         sy.render(220*(2**(7/12)),d=.25),
+                        ))
+        sound2=n.hstack((sy.render(220*(2**(0/12)),d=.75),
+                         sy.render(220*(2**(0/12)),d=.25),
+                         sy.render(220*(2**(7/12)),d=.75),
+                         sy.render(220*(2**(0/12)),d=.25),
+                         sy.render(220*(2**(-1/12)),d=2.0),
+                       ))
+        sound3=n.hstack((n.zeros(44100),
+                         sy.render(220*(2**(-1/12)),d=.5),
+                         sy.render(220*(2**(8/12)),d=2.),
+                         sy.render(220*(2**(8/12)),d=.25),
+                         sy.render(220*(2**(8/12)),d=.25),
+                         sy.render(220*(2**(-1/12)),d=1.75),
+                         sy.render(220*(2**(-1/12)),d=.25),
+                       ))
+        sound4=n.hstack((
+                         sy.render(220*(2**(0/12)),d=1.),
+                         sy.render(220*(2**(7/12)),d=.5),
+                         sy.render(220*(2**(11/12)),d=.5),
+                         sy.render(220*(2**(12/12)),d=.75),
+                         sy.render(220*(2**(11/12)),d=.25),
+                         sy.render(220*(2**(12/12)),d=1.),
+                         sy.render(220*(2**(8/12)),d=2.),
+                         sy.render(220*(2**(7/12)),d=2.),
+                         sy.render(220*(2**(-1/12)),d=2.),
+                         n.zeros(2*44100)
+                       ))
+
+        sound=n.hstack((sound0,sound1,sound2,sound3,sound4))
         UT.write(sound,"sound.wav")
-    def Animation(self):
+    def makeAnimation(self):
         """Use pymovie to render (visual+audio)+text overlays.
         """
         aclip=mpy.AudioFileClip("sound.wav")
