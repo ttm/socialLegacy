@@ -1,11 +1,4 @@
 import networkx as x
-import mass as m
-UTILS=m.Utils()
-bt=m.BasicTables()
-co=m.BasicConverter()
-sy=m.Synth()
-sy.adsrSetup(A=20,D=20,R=10)
-
 class GDFgraph:
     """Read GDF graph into networkX"""
     def __init__(self,filename="../data/RenatoFabbri06022014.gdf"):
