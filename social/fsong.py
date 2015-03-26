@@ -45,7 +45,7 @@ class FSong:
             self.plotGraph("reversed",sector,"sector{}R.png".format(i))
             self.plotGraph("plain", n.setdiff1d(agents,sector),"sector{}N.png".format(i))
             self.plotGraph("reversed",n.setdiff1d(agents,sector),"sector{}RN.png".format(i))
-        for i, node in enumerate(self.nodes):
+        for i, node in enumerate(self.nm.nodes_):
             self.plotGraph("plain",   [node],"lonely{}.png".format(i))
             self.plotGraph("reversed",[node],"lonely{}R.png".format(i))
             self.plotGraph("plain",   self.nm.nodes_[:i],"stair{}.png".format(i))
@@ -56,7 +56,9 @@ class FSong:
         """Plot graph with nodes (iterable) into filename
         """
         if nodes==None:
-            nodes=self.A.nodes()
+            nodes=self.nodes
+        else:
+            nodes=[i for i in self.nodes if i in nodes]
         for node in self.nodes:
             n_=self.A.get_node(node)
             if mode=="plain":
