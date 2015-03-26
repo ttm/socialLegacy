@@ -2,7 +2,8 @@ import social as S, os
 ENV=os.environ["PATH"]
 import  importlib
 from IPython.lib.deepreload import reload as dreload
-importlib.reload(S.utils)
+#importlib.reload(S.utils)
+importlib.reload(S.fsong)
 #dreload(S)
 os.environ["PATH"]=ENV
 
