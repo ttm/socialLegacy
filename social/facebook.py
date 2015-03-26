@@ -47,7 +47,6 @@ class ScrapyBrowser:
         tdict["friends"]=friends
         infos=self.browser.find_by_css("._3c_")
         mutual=0
-        total=0
         for info in infos:
             if info.value=="Mutual Friends":
                 if info.find_by_css("._3d0").value:
