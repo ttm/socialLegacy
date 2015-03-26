@@ -1,15 +1,23 @@
 import gmane as g, networkx as x, pylab as p, numpy as n, os
+import moviepy.editor as mpy, mass as m
+UT=m.Utils()
+bt=m.BasicTables()
+co=m.BasicConverter()
+sy=m.Synth()
+sy.adsrSetup(A=20,D=20,R=10)
+
 class FSong:
     """Create song from undirected (friendship) network
     """
-    def __init__(self, network,basedir="fsong/",clean=True):
+    def __init__(self, network,basedir="fsong/",clean=False,render_images=False):
         os.system("mkdir {}".format(basedir))
         if clean:
             os.system("rm {}*".format(basedir))
         self.basedir=basedir
         self.network=network
         self.makePartitions()
-        self.makeImages()
+        if render_images:
+            self.makeImages()
         self.makeSong()
     def makePartitions(self):
         """Make partitions with gmane help.
@@ -41,15 +49,15 @@ class FSong:
         self.plotGraph("reversed",filename="tgraphR")
         agents=n.concatenate(self.np.sectorialized_agents__)
         for i, sector in enumerate(self.np.sectorialized_agents__):
-            self.plotGraph("plain",   sector,"sector{}.png".format(i))
-            self.plotGraph("reversed",sector,"sector{}R.png".format(i))
-            self.plotGraph("plain", n.setdiff1d(agents,sector),"sector{}N.png".format(i))
-            self.plotGraph("reversed",n.setdiff1d(agents,sector),"sector{}RN.png".format(i))
+            self.plotGraph("plain",   sector,"sector{:02}.png".format(i))
+            self.plotGraph("reversed",sector,"sector{:02}R.png".format(i))
+            self.plotGraph("plain", n.setdiff1d(agents,sector),"sector{:02}N.png".format(i))
+            self.plotGraph("reversed",n.setdiff1d(agents,sector),"sector{:02}RN.png".format(i))
         for i, node in enumerate(self.nm.nodes_):
-            self.plotGraph("plain",   [node],"lonely{}.png".format(i))
-            self.plotGraph("reversed",[node],"lonely{}R.png".format(i))
-            self.plotGraph("plain",   self.nm.nodes_[:i],"stair{}.png".format(i))
-            self.plotGraph("reversed",self.nm.nodes_[:i],"stair{}R.png".format(i))
+            self.plotGraph("plain",   [node],"lonely{:09}.png".format(i))
+            self.plotGraph("reversed",[node],"lonely{:09}R.png".format(i))
+            self.plotGraph("plain",   self.nm.nodes_[:i],"stair{:09}.png".format(i))
+            self.plotGraph("reversed",self.nm.nodes_[:i],"stair{:09}R.png".format(i))
         # plotar novamente usando somente vertices e depois somente arestas
 
     def plotGraph(self,mode="plain",nodes=None,filename="tgraph.png"):
@@ -116,13 +124,30 @@ class FSong:
     def makeVisualSong(self):
         """Return a sequence of images and durations.
         """
-        pass
+        self.files=os.listdir(self.basedir)
+        self.stairs=[i for i in self.files if ("stair" in i) and ("R" in i)]
+        self.sectors=[i for i in self.files if "sector" in i]
+        self.stairs.sort()
+        self.sectors.sort()
+        filenames=[self.basedir+i for i in self.sectors[:4]]
+        self.iS=mpy.ImageSequenceClip(filenames,durations=[1.5,2.5,.5,1.5])
+        # Clip with three first images3
+        # each sector a sound
+        # sweep from periphery to center
+        # all, all inverted
+        # sectors with inversions
     def makeAudibleSong(self):
         """Use mass to render wav soundtrack.
         """
-        pass
+        sound=n.hstack((sy.render(220,d=1.5),
+                        sy.render(220*(2**(7/12)),d=2.5),
+                        sy.render(220*(2**(-5/12)),d=.5),
+                        sy.render(220*(2**(0/12)),d=1.5),
+                        ))
+        UT.write(sound,"sound.wav")
     def Animation(self):
         """Use pymovie to render (visual+audio)+text overlays.
         """
-        pass
-
+        aclip=mpy.AudioFileClip("sound.wav")
+        self.iS=self.iS.set_audio(aclip)
+        self.iS.write_videofile("aquiLL.webm",15,audio=True)
