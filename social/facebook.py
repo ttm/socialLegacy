@@ -65,9 +65,3 @@ class ScrapyBrowser:
                 pickle.dump(tdict,f)
         self.tdict=tdict
         return tdict
-
-        
-
-
-
-
