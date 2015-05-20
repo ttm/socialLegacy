@@ -36,7 +36,7 @@ def rodaSearch(search,fname,output,rr=None):
         pickle.dump(rrr,f,-1)
         f.close()
         time.sleep(15*60)
-        output.put(rr)
+        #output.put(rr)
         rodaSearch(search,fname,output,rr)
     #f=open(fname,"wb")
     #rrr=rr[:]
