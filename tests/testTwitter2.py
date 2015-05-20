@@ -1,4 +1,4 @@
-import twython as T, maccess, time
+import twython as T, maccess, time, pickle
 import multiprocessing as mp
 
 terms=["#jesus",
@@ -10,7 +10,7 @@ terms=["#jesus",
        "#dilma",
        "#science",
        "#god"]
-fnames=["pickleDir/{}".format(term.replace("#","HASH")) for term in terms]
+fnames=["pickleDir/{}".format(term.replace("#","HASH")+".pickle") for term in terms]
 twitters=[]
 searchs=[]
 for tw,term in zip(maccess.TW,terms):
@@ -31,11 +31,12 @@ def rodaSearch(search,fname,output,rr=None):
             print("result "+fname)
             rr.append(result)
     except:
-        #f=open(fname,"wb")
-        #rrr=rr[:]
-        #pickle.dump(rrr,f,-1)
-        #f.close()
+        f=open(fname,"wb")
+        rrr=rr[:]
+        pickle.dump(rrr,f,-1)
+        f.close()
         time.sleep(15*60)
+        output.put(rr)
         rodaSearch(search,fname,output,rr)
     #f=open(fname,"wb")
     #rrr=rr[:]
@@ -52,7 +53,7 @@ processes=[mp.Process(target=rodaSearch,args=(search,fname,output)) for search,f
 #output=[p.get() for p in results__]
 for p in processes:
     p.start()
-for p in processes:
-    p.join()
-results=[output.get() for p in processes]
-print(results)
+#for p in processes:
+#    p.join()
+#results=[output.get() for p in processes]
+#print(results)
