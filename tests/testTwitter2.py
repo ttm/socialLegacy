@@ -26,18 +26,18 @@ for tw,term in zip(maccess.TW,terms):
 def rodaSearch(search,fname,output,rr=None):
     if not rr:
         rr=[]
-    try:
-        for result in search:
-            print("result "+fname)
-            rr.append(result)
-    except:
-        f=open(fname,"wb")
-        rrr=rr[:]
-        pickle.dump(rrr,f,-1)
-        f.close()
-        time.sleep(15*60)
-        #output.put(rr)
-        rodaSearch(search,fname,output,rr)
+    for result in zip(list(range(2500)),search):
+        print("result "+fname)
+        rr.append(result)
+    f=open(fname,"wb")
+    rrr=rr[:]
+    pickle.dump(rrr,f,-1)
+    f.close()
+    print("SLEEP "+fname, len(rr))
+    time.sleep(15*63)
+    #output.put(rr)
+    print("AWAKE "+fname,len(rr))
+    rodaSearch(search,fname,output,rr)
     #f=open(fname,"wb")
     #rrr=rr[:]
     #pickle.dump(rrr,f,-1)
@@ -57,3 +57,88 @@ for p in processes:
 #    p.join()
 #results=[output.get() for p in processes]
 #print(results)
+
+
+"""
+def rodaSearch(search,fname,output,rr=None):
+    if not rr:
+        rr=[]
+    for result in zip(search,list(range(2500))):
+        print("result "+fname)
+        rr.append(result)
+    f=open(fname,"wb")
+    rrr=rr[:]
+    pickle.dump(rrr,f,-1)
+    f.close()
+    print("SLEEP "+fname)
+    time.sleep(15*62)
+    print("AWAKE "+fname)
+    for result in zip(search,list(range(2500))):
+        print("result "+fname)
+        rr.append(result)
+    f=open(fname,"wb")
+    rrr=rr[:]
+    pickle.dump(rrr,f,-1)
+    f.close()
+    print("SLEEP "+fname)
+    time.sleep(15*62)
+    print("AWAKE "+fname)
+    for result in zip(search,list(range(2500))):
+        print("result "+fname)
+        rr.append(result)
+    f=open(fname,"wb")
+    rrr=rr[:]
+    pickle.dump(rrr,f,-1)
+    f.close()
+    print("SLEEP "+fname)
+    time.sleep(15*62)
+    print("AWAKE "+fname)
+    for result in zip(search,list(range(2500))):
+        print("result "+fname)
+        rr.append(result)
+    f=open(fname,"wb")
+    rrr=rr[:]
+    pickle.dump(rrr,f,-1)
+    f.close()
+    print("SLEEP "+fname)
+    time.sleep(15*62)
+    print("AWAKE "+fname)
+    for result in zip(search,list(range(2500))):
+        print("result "+fname)
+        rr.append(result)
+    f=open(fname,"wb")
+    rrr=rr[:]
+    pickle.dump(rrr,f,-1)
+    f.close()
+    print("SLEEP "+fname)
+    time.sleep(15*62)
+    print("AWAKE "+fname)
+    for result in zip(search,list(range(2500))):
+        print("result "+fname)
+        rr.append(result)
+    f=open(fname,"wb")
+    rrr=rr[:]
+    pickle.dump(rrr,f,-1)
+    f.close()
+    print("SLEEP "+fname)
+    time.sleep(15*62)
+    print("AWAKE "+fname)
+    for result in zip(search,list(range(2500))):
+        print("result "+fname)
+        rr.append(result)
+    f=open(fname,"wb")
+    rrr=rr[:]
+    pickle.dump(rrr,f,-1)
+    f.close()
+    print("SLEEP "+fname)
+    time.sleep(15*62)
+    print("AWAKE "+fname)
+
+
+
+
+
+
+
+
+"""

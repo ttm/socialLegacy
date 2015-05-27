@@ -1,4 +1,28 @@
 import networkx as x
+def makeRetweetNetwork(tweets):
+    """Receives tweets, returns directed retweet networks.
+    
+    Without and with isolated nodes.
+    """
+    G=x.DiGraph()
+    G_=x.DiGraph()
+    for tweet in tweets:
+        text=tweet["text"]
+        us=tweet["user"]["screen_name"]
+        if text.startswith("RT @"):
+            prev_us=text.split(":")[0].split("@")[1]
+            #print(us,prev_us,text)
+            if G.has_edge(prev_us,us):
+                G[prev_us][us]["weight"]+=1
+                G_[prev_us][us]["weight"]+=1
+            else:
+                G.add_edge(prev_us, us, weight=1.)
+                G_.add_edge(prev_us, us, weight=1.)
+        if us not in G_.nodes():
+            G_.add_node(us)
+    return G,G_
+
+
 class GDFgraph:
     """Read GDF graph into networkX"""
     def __init__(self,filename="../data/RenatoFabbri06022014.gdf"):
@@ -19,9 +43,11 @@ class GDFgraph:
             fields=line.split(",")
             if "column_names2" not in locals():
                 for i, field in enumerate(fields):
+                    if field.isdigit(): field=int(field)
                     data_friends[column_names[i]].append(field)
             else:
                 for i, field in enumerate(fields):
+                    if field.isdigit(): field=int(field)
                     data_friendships[column_names2[i]].append(field)
         self.data_friendships=data_friendships
         self.data_friends=data_friends
@@ -34,8 +60,8 @@ class GDFgraph:
             self.G=G=x.DiGraph()
         else:
             self.G=G=x.Graph()
+        F=self.data_friends
         for friendn in range(self.n_friends):
-            F=self.data_friends
             if "posts" in F.keys():
                 G.add_node(F["name"][friendn],
                              label=F["label"][friendn],
@@ -51,8 +77,8 @@ class GDFgraph:
                              label=F["label"][friendn],
                              gender=F["sex"][friendn],
                              locale=F["locale"][friendn])
+        F=self.data_friendships
         for friendshipn in range(self.n_friendships):
-            F=self.data_friendships
             if "weight" in F.keys():
                 G.add_edge(F["node1"][friendshipn],F["node2"][friendshipn],weight=F["weight"][friendshipn])
             else:
