@@ -2,12 +2,27 @@
 Social participation data analysis and exploitation
 ==================================================================
 
-This project gathers social data and routines for analysis and exploitation. At the most fundamental level, social participation linked data is accessed and analyzed. Public data, such as provided by the Gmane database or donated profiles from private networks (e.g. Facebook), or even gathered by Twitter, is incorporated as RDF in the Social Graph considered. Observance of stability and the synthesis of audiovisual artifacts eases observation, probing and exploitation.
+This project gathers social data and routines for analysis and exploitation. At the most fundamental level, social participation linked data is accessed and analyzed. Public data, such as provided by the Gmane database or donated profiles from private networks (e.g. Facebook), or even gathered by Twitter, is incorporated as RDF in the Social Graph considered. Observance of stability and the synthesis of audiovisual artifacts eases observation, probing and exploitation.]
+
+
+
+Pypi package:   https://pypi.python.org/pypi/social
+
+        $ pip install social
+
+or
+
+        $ python setup.py install
+
+For greater control of customization (and debugging), clone the repo and install with pip with -e:
+
+        $ git clone https://github.com/ttm/social.git
+
+        $ pip install -e <path_to_repo>
+
 
 Usage example
 =================
-Download messages from one GMANE list:
-
 .. code:: python
 
     import social as S
