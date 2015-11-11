@@ -1,5 +1,13 @@
 import time, os, pickle, multiprocessing as mp
 from splinter import Browser
+from bs4 import BeautifulSoup
+
+def readFBPost(fpath=""):
+    """Extract information from HTML page with a Facebook post"""
+    html=open(fpath,"rb")
+    soup = BeautifulSoup(html, "lxml")
+    return soup
+
 
 class ScrapyBrowser:
     """Opens a browser for user to login to facebook.
