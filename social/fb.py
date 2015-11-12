@@ -1,4 +1,4 @@
-import time, os, pickle, shutil
+import time, os, pickle, shutil, datetime
 import networkx as x, rdflib as r
 from splinter import Browser
 from bs4 import BeautifulSoup
@@ -8,11 +8,21 @@ this_dir = os.path.split(__file__)[0]
 
 def triplifyFriendshipNetwork(fname,fpath):
     fg2=readGDF(fname)
-    tg=P.rdf.makeBasicGraph([["per","fb"],[P.rdf.ns.per,P.rdf.ns.fb]],"My facebook ego friendship network") # drop de agraph
+    tg=P.rdf.makeBasicGraph([["po","fb"],[P.rdf.ns.per,P.rdf.ns.fb]],"My facebook ego friendship network") # drop de agraph
+    tg2=P.rdf.makeBasicGraph([["po"],[P.rdf.ns.per]],"Metadata for my facebook ego friendship network RDF files") # drop de agraph
+    ind=P.rdf.IC([tg2],P.rdf.ns.po.Snapshot,"rfabbrifb06022014","Snapshot rfabbri fb 0202214")
+    P.rdf.link([tg2],ind,"Snapshot rfabbri fb 0202214",[P.rdf.ns.po.createdAt,
+                          P.rdf.ns.po.triplifiedIn,
+                          P.rdf.ns.po.donatedBy,
+                          P.rdf.ns.po.acquiredThrough],
+                          [datetime.datetime(2014,2,6).isoformat().split("T")[0],
+                           datetime.datetime.now(),
+                           "Renato Fabbri",
+                           "Netvizz"])
     #for friend_attr in fg2["friends"]:
     friends_=[fg2["friends"][i] for i in ("name","label","locale","sex","agerank")]
     for name,label,locale,sex,agerank in zip(*friends_):
-        ind=P.rdf.I([tg],P.rdf.ns.fb.Participant,name,label)
+        ind=P.rdf.IC([tg],P.rdf.ns.fb.Participant,name,label)
         P.rdf.link([tg],ind,label,[P.rdf.ns.fb.uid,P.rdf.ns.fb.name,
                         P.rdf.ns.fb.locale,P.rdf.ns.fb.sex,
                         P.rdf.ns.fb.agerank],
@@ -23,10 +33,10 @@ def triplifyFriendshipNetwork(fname,fpath):
     i=1
     for uid1,uid2 in zip(*friendships_):
         flabel="{}-{}".format(uid1,uid2)
-        ind=P.rdf.I([tg],P.rdf.ns.fb.Friendship,
+        ind=P.rdf.IC([tg],P.rdf.ns.fb.Friendship,
                 flabel,"FS"+flabel)
-        ind1=P.rdf.I([tg],P.rdf.ns.fb.Friendship,uid1,"")
-        ind2=P.rdf.I([tg],P.rdf.ns.fb.Friendship,uid2,"")
+        ind1=P.rdf.IC([tg],P.rdf.ns.fb.Friendship,uid1,"")
+        ind2=P.rdf.IC([tg],P.rdf.ns.fb.Friendship,uid2,"")
         uids=[r.URIRef(P.rdf.ns.fb.Participant+"#"+str(i)) for i in (uid1,uid2)]
         P.rdf.link_([tg],ind,flabel,[P.rdf.ns.fb.member]*2,
                             uids)
@@ -48,6 +58,7 @@ def triplifyFriendshipNetwork(fname,fpath):
     if not os.path.isdir(fpath+"base"):
         os.mkdir(fpath+"base")
     shutil.copy(fname,fpath+"base/")
+    P.rdf.writeAll(tg2,"rfabbriMeta","fb/",1)
     # faz um README
     with open(fpath+"README","w") as f:
         f.write("""This repo delivers RDF data from my facebook
