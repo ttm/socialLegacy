@@ -4,9 +4,9 @@ importlib.reload(S.fb)
 importlib.reload(P.rdf)
 fname="../data/RenatoFabbri06022014.gdf"
 #fpath="/home/r/repos/linkedRFabbri/"
-fpath="./fb/"
+fpath="./publishing/fb/"
 aname="rfabbri"
-S.fb.triplifyFriendshipNetwork(fname,fpath)
+S.fb.triplifyFriendshipNetwork(fname,fpath,aname)
 # after execution of these commands,
 # the fpath should have de files
 # for using my fb data as linked data

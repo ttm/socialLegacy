@@ -6,18 +6,32 @@ import percolation as P
 c=P.utils.check
 this_dir = os.path.split(__file__)[0]
 
-def triplifyFriendshipNetwork(fname,fpath):
+def triplifyFriendshipNetwork(fname="foo.gdf",fpath="./fb/",aname="barname"):
+    """Produce a linked data publication tree from a standard GDF file.
+
+    INPUTS:
+    => the file name (fname, with path) where the gdf file
+    of the friendship network is.
+
+    => the final path (fpath) for the tree of files to be created.
+    
+    => a string (aname) to be associated to the filenames created.
+    
+    OUTPUTS:
+    the tree in the directory fpath."""
     fg2=readGDF(fname)
     tg=P.rdf.makeBasicGraph([["po","fb"],[P.rdf.ns.per,P.rdf.ns.fb]],"My facebook ego friendship network") # drop de agraph
     tg2=P.rdf.makeBasicGraph([["po"],[P.rdf.ns.per]],"Metadata for my facebook ego friendship network RDF files") # drop de agraph
     ind=P.rdf.IC([tg2],P.rdf.ns.po.Snapshot,"rfabbrifb06022014","Snapshot rfabbri fb 0202214")
-    P.rdf.link([tg2],ind,"Snapshot rfabbri fb 0202214",[P.rdf.ns.po.createdAt,
+    P.rdf.link([tg2],ind,"Snapshot rfabbri fb 0602214",[P.rdf.ns.po.createdAt,
                           P.rdf.ns.po.triplifiedIn,
                           P.rdf.ns.po.donatedBy,
+                          P.rdf.ns.po.availableAt,
                           P.rdf.ns.po.acquiredThrough],
                           [datetime.datetime(2014,2,6).isoformat().split("T")[0],
                            datetime.datetime.now(),
                            "Renato Fabbri",
+                           "https://github.com/ttm/rfabbrifb60202014"
                            "Netvizz"])
     #for friend_attr in fg2["friends"]:
     friends_=[fg2["friends"][i] for i in ("name","label","locale","sex","agerank")]
@@ -41,15 +55,15 @@ def triplifyFriendshipNetwork(fname,fpath):
         P.rdf.link_([tg],ind,flabel,[P.rdf.ns.fb.member]*2,
                             uids)
         P.rdf.L_([tg],uids[0],P.rdf.ns.fb.friend,uids[1])
-        if (i%100)==0:
-            break
+        if (i%1000)==0:
             c(i)
         i+=1
     P.rdf.G(tg[0],P.rdf.ns.fb.friend,
             P.rdf.ns.rdf.type,
             P.rdf.ns.owl.SymmetricProperty)
     c("escritas amizades")
-    P.rdf.writeAll(tg,"rfabbri","fb/",False)
+    tg_=[tg[0]+tg2[0],tg[1]]
+    P.rdf.writeAll(tg_,"rfabbriTranslate",fpath,False,1)
     # copia o script que gera este codigo
     if not os.path.isdir(fpath+"scripts"):
         os.mkdir(fpath+"scripts")
@@ -58,7 +72,7 @@ def triplifyFriendshipNetwork(fname,fpath):
     if not os.path.isdir(fpath+"base"):
         os.mkdir(fpath+"base")
     shutil.copy(fname,fpath+"base/")
-    P.rdf.writeAll(tg2,"rfabbriMeta","fb/",1)
+    P.rdf.writeAll(tg2,"rfabbriMeta",fpath,1)
     # faz um README
     with open(fpath+"README","w") as f:
         f.write("""This repo delivers RDF data from my facebook
