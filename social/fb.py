@@ -1,4 +1,4 @@
-import time, os, pickle, shutil, datetime
+import time, os, pickle, shutil, datetime, re
 import networkx as x, rdflib as r
 from splinter import Browser
 from bs4 import BeautifulSoup
@@ -6,53 +6,86 @@ import percolation as P
 c=P.utils.check
 this_dir = os.path.split(__file__)[0]
 
-def triplifyGML(fname="foo.gdf",fpath="./fb/",aname=None):
-    if not aname:
-        aname=fname.aplit(".")[0]
+def triplifyGML(fname="foo.gml",fpath="./fb/",scriptpath=None,uid=None,sid=None):
+#    aname=fname.split("/")[-1].split(".")[0]
+    if "RonaldCosta" in fname:
+        aname=fname.split("/")[-1].split(".")[0]
+        name,day,month,year=re.findall(".*/([a-zA-Z]*)(\d\d)(\d\d)(\d\d\d\d).gml",fname)[0]
+        datetime_snapshot=datetime.datetime(*[int(i) for i in (year,month,day)]).isoformat().split("T")[0]
+        name_="Ronald Scherolt Costa"
+    elif "AntonioAnzoategui" in fname:
+        aname=re.findall(".*/([a-zA-Z]*\d*)",fname)[0]
+        name,year,month,day,hour,minute=re.findall(r".*/([a-zA-Z]*).*_(\d+)_(\d*)_(\d*)_(\d*)_(\d*)_.*",fname)[0]
+        datetime_snapshot=datetime.datetime(*[int(i) for i in (year,month,day,hour,minute)]).isoformat()[:-3]
+        name_="Antônio Anzoategui Fabbri"
+    else:
+        name_=" ".join(re.findall("[A-Z][^A-Z]*",name))
+    fname_=fname.split("/")[-1]
     fg2=x.read_gml(fname)
-    mnetwork=gf2
     tg=P.rdf.makeBasicGraph([["po","fb"],[P.rdf.ns.per,P.rdf.ns.fb]],"My facebook ego friendship network") # drop de agraph
-    tg2=P.rdf.makeBasicGraph([["po"],[P.rdf.ns.per]],"Metadata for my facebook ego friendship network RDF files") # drop de agraph
-    ind=P.rdf.IC([tg2],P.rdf.ns.po.Snapshot,"rfabbrifb06022014","Snapshot rfabbri fb 0202214")
-    P.rdf.link([tg2],ind,"Snapshot rfabbri fb 0602214",[P.rdf.ns.po.createdAt,
+    tg2=P.rdf.makeBasicGraph([["po"],[P.rdf.ns.per]],"RDF metadata for the facebook friendship network of my son") # drop de agraph
+    ind=P.rdf.IC([tg2],P.rdf.ns.po.Snapshot,
+            aname,"Snapshot {}".format(aname))
+    P.rdf.link([tg2],ind,"Snapshot {}".format(aname),
+                          [P.rdf.ns.po.createdAt,
                           P.rdf.ns.po.triplifiedIn,
                           P.rdf.ns.po.donatedBy,
                           P.rdf.ns.po.availableAt,
+                          P.rdf.ns.po.originalFile,
                           P.rdf.ns.po.rdfFile,
                           P.rdf.ns.po.ttlFile,
                           P.rdf.ns.po.discorveryRDFFile,
                           P.rdf.ns.po.discoveryTTLFile,
-                          P.rdf.ns.po.acquiredThrough],
-                          [datetime.datetime(2014,2,6).isoformat().split("T")[0],
+                          P.rdf.ns.po.acquiredThrough,
+                          P.rdf.ns.rdfs.comment,
+                          P.rdf.ns.fb.uid,
+                          P.rdf.ns.fb.sid
+                          ],
+                          [datetime_snapshot,
                            datetime.datetime.now(),
-                           "Renato Fabbri",
-                           "https://github.com/ttm/rfabbrifb60202014",
-                           "https://raw.githubusercontent.com/ttm/rfabbrifb60202014/master/rdf/{}Translate.owl".format(aname),
-                           "https://raw.githubusercontent.com/ttm/rfabbrifb60202014/master/rdf/{}Translate.ttl".format(aname),
-                                "https://raw.githubusercontent.com/ttm/rfabbrifb60202014/master/rdf/{}Meta.owl".format(aname),
-                                "https://raw.githubusercontent.com/ttm/rfabbrifb60202014/master/rdf/{}Meta.ttl".format(aname),
-                           "Netvizz"])
+                           name,
+                           "https://github.com/ttm/".format(aname),
+                           "https://raw.githubusercontent.com/ttm/{}/master/base/{}.".format(aname,fname_),
+                           "https://raw.githubusercontent.com/ttm/{}/master/rdf/{}Translate.owl".format(aname,aname),
+                           "https://raw.githubusercontent.com/ttm/{}/master/rdf/{}Translate.ttl".format(aname,aname),
+                                "https://raw.githubusercontent.com/ttm/{}/master/rdf/{}Meta.owl".format(aname,aname),
+                                "https://raw.githubusercontent.com/ttm/{}/master/rdf/{}Meta.ttl".format(aname,aname),
+                           "Netvizz",
+                                "The facebook friendship network from {}".format(name_),
+                                uid,
+                                sid
+                           ])
     #for friend_attr in fg2["friends"]:
-    friends_=[fg2["friends"][i] for i in ("name","label","locale","sex","agerank")]
-    for name,label,locale,sex,agerank in zip(*friends_):
-        ind=P.rdf.IC([tg],P.rdf.ns.fb.Participant,name,label)
-        P.rdf.link([tg],ind,label,[P.rdf.ns.fb.uid,P.rdf.ns.fb.name,
-                        P.rdf.ns.fb.locale,P.rdf.ns.fb.sex,
-                        P.rdf.ns.fb.agerank],
-                        [name,label,locale,sex,agerank])
+    for uid in fg2:
+        data=[fg2.node[uid][attr] for attr in ("id","label","locale","sex","agerank","wallcount")]
+        ind=P.rdf.IC_([tg],P.rdf.ns.fb.Participant,"{}-{}".format(data[0],aname,data[1]))
+        P.rdf.link([tg],ind,data[1],
+                        [P.rdf.ns.fb.gid, P.rdf.ns.fb.name,
+                        P.rdf.ns.fb.locale, P.rdf.ns.fb.sex,
+                        P.rdf.ns.fb.agerank,P.rdf.ns.fb.wallcount],
+                        data)
 
-    friendships_=[fg2["friendships"][i] for i in ("node1","node2")]
+    #friends_=[fg2["friends"][i] for i in ("name","label","locale","sex","agerank")]
+    #for name,label,locale,sex,agerank in zip(*friends_):
+    #    ind=P.rdf.IC([tg],P.rdf.ns.fb.Participant,name,label)
+    #    P.rdf.link([tg],ind,label,[P.rdf.ns.fb.uid,P.rdf.ns.fb.name,
+    #                    P.rdf.ns.fb.locale,P.rdf.ns.fb.sex,
+    #                    P.rdf.ns.fb.agerank],
+    #                    [name,label,locale,sex,agerank])
+
     c("escritos participantes")
+    #friendships_=[fg2["friendships"][i] for i in ("node1","node2")]
     i=1
-    for uid1,uid2 in zip(*friendships_):
-        flabel="{}-{}".format(uid1,uid2)
+    for uid1,uid2 in fg2.edges():
+        flabel="{}-{}-{}".format(aname,uid1,uid2)
         ind=P.rdf.IC([tg],P.rdf.ns.fb.Friendship,
                 flabel,"FS"+flabel)
-        ind1=P.rdf.IC([tg],P.rdf.ns.fb.Friendship,uid1,"")
-        ind2=P.rdf.IC([tg],P.rdf.ns.fb.Friendship,uid2,"")
-        uids=[r.URIRef(P.rdf.ns.fb.Participant+"#"+str(i)) for i in (uid1,uid2)]
-        P.rdf.link_([tg],ind,flabel,[P.rdf.ns.fb.member]*2,
-                            uids)
+#        ind1=P.rdf.IC([tg],P.rdf.ns.fb.Friendship,uid1,"")
+#        ind2=P.rdf.IC([tg],P.rdf.ns.fb.Friendship,uid2,"")
+#        uids=[P.rdf.IC(None,P.rdf.ns.fb.Participant,i) for i in (uid1,uid2)]
+        uids=[P.rdf.IC_([tg],P.rdf.ns.fb.Participant,"{}-{}".format(i,aname,data[1])) for i in (uid1,uid2)]
+        #uids=[r.URIRef(P.rdf.ns.fb.Participant+"#"+str(i)) for i in (uid1,uid2)]
+        P.rdf.link_([tg],ind,flabel,[P.rdf.ns.fb.member]*2, uids)
         P.rdf.L_([tg],uids[0],P.rdf.ns.fb.friend,uids[1])
         if (i%1000)==0:
             c(i)
@@ -62,28 +95,31 @@ def triplifyGML(fname="foo.gdf",fpath="./fb/",aname=None):
             P.rdf.ns.owl.SymmetricProperty)
     c("escritas amizades")
     tg_=[tg[0]+tg2[0],tg[1]]
-    P.rdf.writeAll(tg_,aname+"Translate",fpath,False,1)
+    fpath_="{}/{}/".format(fpath,aname)
+    P.rdf.writeAll(tg_,aname+"Translate",fpath_,False,1)
     # copia o script que gera este codigo
-    if not os.path.isdir(fpath+"scripts"):
-        os.mkdir(fpath+"scripts")
-    shutil.copy(this_dir+"/../tests/rdfMyFNetwork2.py",fpath+"scripts/")
+    if not os.path.isdir(fpath_+"scripts"):
+        os.mkdir(fpath_+"scripts")
+    #shutil.copy(this_dir+"/../tests/rdfMyFNetwork2.py",fpath+"scripts/")
+    shutil.copy(scriptpath,fpath_+"scripts/")
     # copia do base data
-    if not os.path.isdir(fpath+"base"):
-        os.mkdir(fpath+"base")
-    shutil.copy(fname,fpath+"base/")
-    P.rdf.writeAll(tg2,aname+"Meta",fpath,1)
+    if not os.path.isdir(fpath_+"base"):
+        os.mkdir(fpath_+"base")
+    shutil.copy(fname,fpath_+"base/")
+    P.rdf.writeAll(tg2,aname+"Meta",fpath_,1)
     # faz um README
-    with open(fpath+"README","w") as f:
-        f.write("""This repo delivers RDF data from my facebook
-friendship network collected at 06/Fev/2014.
-{} friends with metadata {};
-and {} friendships with both friend URIs.
+    with open(fpath_+"README","w") as f:
+        f.write("""This repo delivers RDF data from the facebook
+friendship network of {} collected at {}.
+It has {} friends with metadata {};
+and {} friendships.
 The linked data is available at rdf/ dir and was
-Generated by the routine in the script/ directory.
-Original data from Netvizz in data/""".format(
-            len(fg2["friends"]["name"]),
+generated by the routine in the script/ directory.
+Original data from Netvizz in data/\n""".format(
+            name_,datetime_snapshot,
+            fg2.number_of_nodes(),
                     "facebook numeric id, name, locale, sex and agerank",
-                    len(fg2["friendships"]["node1"])))
+                    fg2.number_of_edges()))
 
 
 def triplifyFriendshipNetwork(fname="foo.gdf",fpath="./fb/",aname="barname"):
@@ -168,7 +204,7 @@ friendship network collected at 06/Fev/2014.
 {} friends with metadata {};
 and {} friendships with both friend URIs.
 The linked data is available at rdf/ dir and was
-Generated by the routine in the script/ directory.
+generated by the routine in the script/ directory.
 Original data from Netvizz in data/""".format(
             len(fg2["friends"]["name"]),
                     "facebook numeric id, name, locale, sex and agerank",
