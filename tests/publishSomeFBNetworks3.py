@@ -8,17 +8,17 @@ c=P.utils.check
 
 #    "LeiCulturaViva50.gdf", acho que é página
 fnames=[
-    ("AdornoNaoEhEnfeite.gdf",0,"265217103529531","https://www.facebook.com/groups/265217103529531/permalink/525654127485826/"),
+    ("AdornoNaoEhEnfeite.gdf","265217103529531",0,"https://www.facebook.com/groups/265217103529531/permalink/525654127485826/"),
+    ("DemocraciaPura06042013.gdf",0,"democraciapura","https://www.facebook.com/groups/democraciapura/permalink/310907215704321/"),
+    ("RedeTranzmidias.gdf","318333384951196",0,"https://www.facebook.com/groups/318333384951196/permalink/346658712118663/"),
+    ("AtivistasDaInclusaoDigital.gdf","423602557691243",0,"https://www.facebook.com/groups/423602557691243/permalink/525201037531394/"),
     ("ComputerArt10032013.gdf",0,"computerart","https://www.facebook.com/groups/computerart/permalink/259389137529870/"),
     ("CoolmeiaAmizades06032013.gdf", 0,"coolmeia","https://www.facebook.com/groups/coolmeia/permalink/489757754464962/"),
     ("Economia14042013.gdf",0,"economa1","https://www.facebook.com/groups/economa1/permalink/586007714743535/"),
     ("PartidoPirata23032013.gdf",0,"partidopiratabrasil","https://www.facebook.com/groups/partidopiratabrasil/permalink/10151409024509317/"),
-    ("DemocraciaPura06042013.gdf",0,"democraciapura","https://www.facebook.com/groups/democraciapura/permalink/310907215704321/"),
     ("DemocraciaDiretaJa14032013.gdf",0,"ddjbrasil","https://www.facebook.com/groups/ddjbrasil/permalink/347023325397298/"),
     ("EconomiaCriativaDigital03032013.gdf",0,"economiacriativadigital","https://www.facebook.com/groups/economiacriativadigital/permalink/438313682916103/"),
     ("PoliticasCulturasBrasileiras08032013.gdf",0,"pcult","https://www.facebook.com/groups/pcult/permalink/519626544747423/"),
-    ("RedeTranzmidias.gdf","318333384951196",0,"https://www.facebook.com/groups/318333384951196/permalink/346658712118663/"),
-    ("AtivistasDaInclusaoDigital.gdf","423602557691243",0,"https://www.facebook.com/groups/423602557691243/permalink/525201037531394/"),
     ]
 fnames2=[("humannoise18_02_2013.gml","100006319395678","barthor.la.zule"),
         ("caleb19022013.gml","1110305437","calebml"),
@@ -54,11 +54,12 @@ for dataset in fnames_:
         tfiles=[i for i in os.listdir(tdir.format("gdf")) if (tnameF in i) and ("ntera" in i)]
         if len(tfiles)>2:
             c(tfiles)
-        tfile=tfiles[0]
-        fname_=tdir.format("gdf")+tfile
-        S.fb.triplifyGDF(fname_,fpath,scriptpath,uid,sid,dlink)
+        if len(tfiles):
+            tfile=tfiles[0]
+            fname_=tdir.format("gdf")+tfile
+            S.fb.triplifyGDF(fname_,fpath,scriptpath,uid,sid,dlink)
     elif fname[-3:]=="gml":
-        fname_=tdir.format("gml",fname)
+        fname_=tdir.format("gml")+fname
         uid,sid=dataset[1:]
         S.fb.triplifyGML(fname_,fpath,scriptpath,uid,sid)
     else:

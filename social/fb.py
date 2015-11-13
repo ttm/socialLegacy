@@ -95,7 +95,7 @@ def triplifyGML(fname="foo.gml",fpath="./fb/",scriptpath=None,uid=None,sid=None)
     for uid1,uid2 in fg2.edges():
         flabel="{}-{}-{}".format(aname,uid1,uid2)
         ind=P.rdf.IC([tg],P.rdf.ns.fb.Friendship,
-                flabel,"FS"+flabel)
+                flabel,"Friendship "+flabel)
 #        ind1=P.rdf.IC([tg],P.rdf.ns.fb.Friendship,uid1,"")
 #        ind2=P.rdf.IC([tg],P.rdf.ns.fb.Friendship,uid2,"")
 #        uids=[P.rdf.IC(None,P.rdf.ns.fb.Participant,i) for i in (uid1,uid2)]
@@ -157,7 +157,7 @@ def triplifyGDF(fname="foo.gdf",fpath="./fb/",scriptpath=None,uid=None,sid=None,
     the tree in the directory fpath."""
     aname=fname.split("/")[-1].split(".")[0]
     if re.findall("(\d)",fname):
-        name,day,month,year=re.findall(".*/([a-zA-Z]*)(\d\d)(\d\d)(\d\d\d\d).gdf",fname)[0]
+        name,day,month,year=re.findall(".*/([a-zA-Z]*)(\d\d)(\d\d)(\d\d\d\d).*.gdf",fname)[0]
         datetime_snapshot=datetime.datetime(*[int(i) for i in (year,month,day)]).isoformat().split("T")[0]
         name_=" ".join(re.findall("[A-Z][^A-Z]*",name))
     else:
@@ -217,6 +217,12 @@ def triplifyGDF(fname="foo.gdf",fpath="./fb/",scriptpath=None,uid=None,sid=None,
         return tkey
     foo={"uris":[],"vals":[]}
     for tkey in tkeys:
+        if tkey=="groupid":
+            P.rdf.link([tg2],ind,"Snapshot {}".format(aname),
+                        [P.rdf.ns.po.uid,],
+                        [fg2["friends"][tkey][0]])
+
+
         foo["uris"]+=[eval("P.rdf.ns.fb."+trans(tkey))]
         foo["vals"]+=[fg2["friends"][tkey]]
     print(tkeys)
@@ -243,11 +249,11 @@ def triplifyGDF(fname="foo.gdf",fpath="./fb/",scriptpath=None,uid=None,sid=None,
         flabel="{}-{}".format(uid1,uid2)
         labels=[name_label[uu] for uu in (uid1,uid2)]
         ind=P.rdf.IC([tg],P.rdf.ns.fb.Friendship,
-                flabel,"FS"+flabel)
+                flabel,"Friendship "+flabel)
         ind1=P.rdf.IC(None,P.rdf.ns.fb.Participant,uid1)
         ind2=P.rdf.IC(None,P.rdf.ns.fb.Participant,uid2)
         uids=[r.URIRef(P.rdf.ns.fb.Participant+"#"+str(i)) for i in (uid1,uid2)]
-        P.rdf.link_([tg],ind,"FS"+flabel,[P.rdf.ns.fb.member]*2,
+        P.rdf.link_([tg],ind,"Friendship "+flabel,[P.rdf.ns.fb.member]*2,
                             uids,labels)
         P.rdf.L_([tg],uids[0],P.rdf.ns.fb.friend,uids[1])
         if (i%1000)==0:
