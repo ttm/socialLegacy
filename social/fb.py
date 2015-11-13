@@ -27,11 +27,19 @@ def triplifyFriendshipNetwork(fname="foo.gdf",fpath="./fb/",aname="barname"):
                           P.rdf.ns.po.triplifiedIn,
                           P.rdf.ns.po.donatedBy,
                           P.rdf.ns.po.availableAt,
+                          P.rdf.ns.po.rdfFile,
+                          P.rdf.ns.po.ttlFile,
+                          P.rdf.ns.po.discorveryRDFFile,
+                          P.rdf.ns.po.discoveryTTLFile,
                           P.rdf.ns.po.acquiredThrough],
                           [datetime.datetime(2014,2,6).isoformat().split("T")[0],
                            datetime.datetime.now(),
                            "Renato Fabbri",
-                           "https://github.com/ttm/rfabbrifb60202014"
+                           "https://github.com/ttm/rfabbrifb60202014",
+                           "https://raw.githubusercontent.com/ttm/rfabbrifb60202014/master/rdf/{}Translate.owl".format(aname),
+                           "https://raw.githubusercontent.com/ttm/rfabbrifb60202014/master/rdf/{}Translate.ttl".format(aname),
+                                "https://raw.githubusercontent.com/ttm/rfabbrifb60202014/master/rdf/{}Meta.owl".format(aname),
+                                "https://raw.githubusercontent.com/ttm/rfabbrifb60202014/master/rdf/{}Meta.ttl".format(aname),
                            "Netvizz"])
     #for friend_attr in fg2["friends"]:
     friends_=[fg2["friends"][i] for i in ("name","label","locale","sex","agerank")]
@@ -63,7 +71,7 @@ def triplifyFriendshipNetwork(fname="foo.gdf",fpath="./fb/",aname="barname"):
             P.rdf.ns.owl.SymmetricProperty)
     c("escritas amizades")
     tg_=[tg[0]+tg2[0],tg[1]]
-    P.rdf.writeAll(tg_,"rfabbriTranslate",fpath,False,1)
+    P.rdf.writeAll(tg_,aname+"Translate",fpath,False,1)
     # copia o script que gera este codigo
     if not os.path.isdir(fpath+"scripts"):
         os.mkdir(fpath+"scripts")
@@ -72,7 +80,7 @@ def triplifyFriendshipNetwork(fname="foo.gdf",fpath="./fb/",aname="barname"):
     if not os.path.isdir(fpath+"base"):
         os.mkdir(fpath+"base")
     shutil.copy(fname,fpath+"base/")
-    P.rdf.writeAll(tg2,"rfabbriMeta",fpath,1)
+    P.rdf.writeAll(tg2,aname+"Meta",fpath,1)
     # faz um README
     with open(fpath+"README","w") as f:
         f.write("""This repo delivers RDF data from my facebook
