@@ -163,6 +163,7 @@ def triplifyGDF(fname="foo.gdf",fpath="./fb/",scriptpath=None,uid=None,sid=None,
     else:
         datetime_snapshot=datetime.datetime(2013,3,15).isoformat().split("T")[0]
         name_=" ".join(re.findall("[A-Z][^A-Z]*",aname))
+        name=aname
 
 
     tg=P.rdf.makeBasicGraph([["po","fb"],[P.rdf.ns.per,P.rdf.ns.fb]],"My facebook ego friendship network") # drop de agraph
@@ -227,6 +228,7 @@ def triplifyGDF(fname="foo.gdf",fpath="./fb/",scriptpath=None,uid=None,sid=None,
         name,label=[foo["vals"][i][icount] for i in (iname,ilabel)]
         if not label:
             label="po:noname"
+            vals_=list(vals_)
             vals_[ilabel]=label
         name_label[name]=label
         ind=P.rdf.IC([tg],P.rdf.ns.fb.Participant,name,label)
