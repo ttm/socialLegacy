@@ -1,13 +1,15 @@
-import social as S, percolation as P
+import social as S, percolation as P, os
 import  importlib
 importlib.reload(S.fb)
 importlib.reload(P.rdf)
 fname="../data/fb/gdf/RenatoFabbri06022014.gdf"
 #fpath="/home/r/repos/linkedRFabbri/"
 fpath="./publishing/fb/"
-aname=fname.split("/")[-1].split(".")[0]
-print(aname)
-S.fb.triplifyFriendshipNetwork(fname,fpath,aname)
+scriptpath=os.path.realpath(__file__)
+uid="781909429"
+sid="renato.fabbri"
+S.fb.triplifyGDF(fname,fpath,scriptpath,uid,sid)
+#S.fb.triplifyFriendshipNetwork(fname,fpath,aname)
 # after execution of these commands,
 # the fpath should have de files
 # for using my fb data as linked data
