@@ -2,7 +2,7 @@ import social as S, percolation as P
 import  importlib
 importlib.reload(S.fb)
 importlib.reload(P.rdf)
-fname="../data/RenatoFabbri06022014.gdf"
+fname="../data/fb/gdf/RenatoFabbri06022014.gdf"
 #fpath="/home/r/repos/linkedRFabbri/"
 fpath="./publishing/fb/"
 aname="rfabbri"
