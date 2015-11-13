@@ -20,23 +20,24 @@ fnames=[
     ("EconomiaCriativaDigital03032013.gdf",0,"economiacriativadigital","https://www.facebook.com/groups/economiacriativadigital/permalink/438313682916103/"),
     ("PoliticasCulturasBrasileiras08032013.gdf",0,"pcult","https://www.facebook.com/groups/pcult/permalink/519626544747423/"),
     ]
-fnames2=[("humannoise18_02_2013.gml","100006319395678","barthor.la.zule"),
-        ("caleb19022013.gml","1110305437","calebml"),
-        ("automata18022013.gml","529899682","aut0mata"),
-        ("Thata_huge_100001089120349_2013_02_19_06_28_20b14681423b224363cad7233f074f38.gml","100001089120349","thais.t.fabbri"),
+fnames2=[("DanielPenalva18022013.gml","100006319395678","barthor.la.zule"),
+        ("CalebLuporini19022013.gml","1110305437","calebml"),
+        ("VilsonVieira18022013.gml","529899682","aut0mata"),
+        ("ThaisTeixeiraFabbri_huge_100001089120349_2013_02_19_06_28_20b14681423b224363cad7233f074f38.gml","100001089120349","thais.t.fabbri"),
         ("RitaWu08042013.gml","100009639240215",0),
         ("RicardoFabbri_huge_1011765_2013_02_18_22_57_04c1993168b2d37f24e2ed2838af151e.gml","1011765","ricardofabbri"),
-        ("RenFabbri03032013.gml","781909429","renato.fabbri"),
-        ("RafaelReiner_huge_814059950_2013_04_09_11_48_df060d634d2332e8070b6a9f1fb58124.gml","814059950","reinehr"),
-        ("PedroRochaAttaktorZeros10032013.gml","836944624","dpedropaulorocha"),
-        ("PeterTGLGetNet huge_770029747_2013_01_28_16_02_c35e1a1dd757fdc412883b9e9698d154.gml","770029747","peter.forrest.18"),
-        ("MariliaPisani_huge_100000812625301_2013_04_10_02_55_f5180b675e47066391deda07c3970ec2.gml","100000812625301","marilia.pisani"),
+        ("RenatoFabbri03032013.gml","781909429","renato.fabbri"),
+        ("RafaelReinehr_huge_814059950_2013_04_09_11_48_df060d634d2332e8070b6a9f1fb58124.gml","814059950","reinehr"),
+        ("PedroPauloRocha10032013.gml","836944624","dpedropaulorocha"),
+        ("PeterForrest_770029747_2013_01_28_16_02_c35e1a1dd757fdc412883b9e9698d154.gml","770029747","peter.forrest.18"),
+        ("MariliaMelloPisani_huge_100000812625301_2013_04_10_02_55_f5180b675e47066391deda07c3970ec2.gml","100000812625301","marilia.pisani"),
         ("LuisCirne07032013.gml","717903828","lufcirne"),
-        ("Lailahuge_1713144485_2013_01_17_02_58_7ef03eec79f843f1e6834acd13f077bf.gml","1713144485","laila.manuelle")]
+        ("LailaManuelle_1713144485_2013_01_17_02_58_7ef03eec79f843f1e6834acd13f077bf.gml","1713144485","laila.manuelle")]
 # para achar o id numerico, visito a página e procuro
 # pela tag 5h60. O profile_owner tem o id correto.
 # jah o id string nao consegui achar no caso da rita
-fnames_=fnames+fnames2
+#fnames_=fnames+fnames2
+fnames_=fnames2
 # achar as redes de interacoes, publicar todo mundo
 # aos pares
 
