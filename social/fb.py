@@ -25,6 +25,7 @@ def triplifyGML(fname="foo.gml",fpath="./fb/",scriptpath=None,uid=None,sid=None)
     the tree in the directory fpath."""
 
 #    aname=fname.split("/")[-1].split(".")[0]
+    aname=fname.split("/")[-1].split(".")[0]
     if "RonaldCosta" in fname:
         aname=fname.split("/")[-1].split(".")[0]
         name,day,month,year=re.findall(".*/([a-zA-Z]*)(\d\d)(\d\d)(\d\d\d\d).gml",fname)[0]
@@ -35,6 +36,10 @@ def triplifyGML(fname="foo.gml",fpath="./fb/",scriptpath=None,uid=None,sid=None)
         name,year,month,day,hour,minute=re.findall(r".*/([a-zA-Z]*).*_(\d+)_(\d*)_(\d*)_(\d*)_(\d*)_.*",fname)[0]
         datetime_snapshot=datetime.datetime(*[int(i) for i in (year,month,day,hour,minute)]).isoformat()[:-3]
         name_="Antônio Anzoategui Fabbri"
+    elif re.findall("(\d)",fname):
+        name,day,month,year=re.findall(".*/([a-zA-Z]*)(\d\d)(\d\d)(\d\d\d\d).*.gml",fname)[0]
+        datetime_snapshot=datetime.datetime(*[int(i) for i in (year,month,day)]).isoformat().split("T")[0]
+        name_=" ".join(re.findall("[A-Z][^A-Z]*",name))
     else:
         name_=" ".join(re.findall("[A-Z][^A-Z]*",name))
     tg=P.rdf.makeBasicGraph([["po","fb"],[P.rdf.ns.per,P.rdf.ns.fb]],"My facebook ego friendship network") # drop de agraph
