@@ -5,7 +5,8 @@ importlib.reload(P.rdf)
 fname="../data/fb/gdf/RenatoFabbri06022014.gdf"
 #fpath="/home/r/repos/linkedRFabbri/"
 fpath="./publishing/fb/"
-aname="rfabbri"
+aname=fname.split("/")[-1].split(".")[0]
+print(aname)
 S.fb.triplifyFriendshipNetwork(fname,fpath,aname)
 # after execution of these commands,
 # the fpath should have de files
