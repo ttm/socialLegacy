@@ -224,7 +224,10 @@ def triplifyGDF(fname="foo.gdf",fpath="./fb/",scriptpath=None,uid=None,sid=None,
     icount=0
     name_label={}
     for vals_ in zip(*foo["vals"]):
-        name,label=[fg2["friends"][i][icount] for i in ("name","label")]
+        name,label=[foo["vals"][i][icount] for i in (iname,ilabel)]
+        if not label:
+            label="po:noname"
+            vals_[ilabel]=label
         name_label[name]=label
         ind=P.rdf.IC([tg],P.rdf.ns.fb.Participant,name,label)
         P.rdf.link([tg],ind,label,foo["uris"],
