@@ -222,8 +222,10 @@ def triplifyGDF(fname="foo.gdf",fpath="./fb/",scriptpath=None,uid=None,sid=None,
     iname=tkeys.index("name")
     ilabel=tkeys.index("label")
     icount=0
+    name_label={}
     for vals_ in zip(*foo["vals"]):
         name,label=[fg2["friends"][i][icount] for i in ("name","label")]
+        name_label[name]=label
         ind=P.rdf.IC([tg],P.rdf.ns.fb.Participant,name,label)
         P.rdf.link([tg],ind,label,foo["uris"],
                         vals_)
@@ -234,13 +236,14 @@ def triplifyGDF(fname="foo.gdf",fpath="./fb/",scriptpath=None,uid=None,sid=None,
     i=1
     for uid1,uid2 in zip(*friendships_):
         flabel="{}-{}".format(uid1,uid2)
+        labels=[name_label[uu] for uu in (uid1,uid2)]
         ind=P.rdf.IC([tg],P.rdf.ns.fb.Friendship,
                 flabel,"FS"+flabel)
         ind1=P.rdf.IC(None,P.rdf.ns.fb.Participant,uid1)
         ind2=P.rdf.IC(None,P.rdf.ns.fb.Participant,uid2)
         uids=[r.URIRef(P.rdf.ns.fb.Participant+"#"+str(i)) for i in (uid1,uid2)]
-        P.rdf.link_([tg],ind,flabel,[P.rdf.ns.fb.member]*2,
-                            uids)
+        P.rdf.link_([tg],ind,"FS"+flabel,[P.rdf.ns.fb.member]*2,
+                            uids,labels)
         P.rdf.L_([tg],uids[0],P.rdf.ns.fb.friend,uids[1])
         if (i%1000)==0:
             c(i)
