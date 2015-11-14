@@ -44,8 +44,8 @@ def triplifyGML(fname="foo.gml",fpath="./fb/",scriptpath=None,uid=None,sid=None)
         name,year,month,day,hour,minute=re.findall(".*/([a-zA-Z]*).*(\d\d\d\d)_(\d\d)_(\d\d)_(\d\d)_(\d\d).*.gml",fname)
     else:
         name_=" ".join(re.findall("[A-Z][^A-Z]*",name))
-    tg=P.rdf.makeBasicGraph([["po","fb"],[P.rdf.ns.per,P.rdf.ns.fb]],"My facebook ego friendship network") # drop de agraph
-    tg2=P.rdf.makeBasicGraph([["po"],[P.rdf.ns.per]],"RDF metadata for the facebook friendship network of my son") # drop de agraph
+    tg=P.rdf.makeBasicGraph([["po","fb"],[P.rdf.ns.per,P.rdf.ns.fb]],"My facebook ego friendship network")
+    tg2=P.rdf.makeBasicGraph([["po","fb"],[P.rdf.ns.per,P.rdf.ns.fb]],"RDF metadata for the facebook friendship network of my son")
     ind=P.rdf.IC([tg2],P.rdf.ns.po.Snapshot,
             aname,"Snapshot {}".format(aname))
     P.rdf.link([tg2],ind,"Snapshot {}".format(aname),
