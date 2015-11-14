@@ -6,8 +6,8 @@ c=P.utils.check
 
 scriptpath=os.path.realpath(__file__)
 fpath="./publishing/irc/"
-a=S.irc.publishLog("../data/irc/labmacambira_lalenia2.txt",fpath,scriptpath,datetime.date(2013, 10, 15))
-b=S.irc.publishLog("../data/irc/labmacambira_lalenia3.txt",fpath,scriptpath,datetime.date(2015, 9, 15))
+a=S.irc.publishLog("../data/irc/labmacambira_lalenia2.txt",fpath,"labMacambiraLaleniaLog2",scriptpath,datetime.date(2013, 10, 15),latin=True)
+b=S.irc.publishLog("../data/irc/labmacambira_lalenia3.txt",fpath,"labMacambiraLaleniaLog3",scriptpath,datetime.date(2015, 9, 15) ,latin=True)
 
 # set(re.findall("\<[a-zA-Z0-9_\-\<\]\[\\\^\{\}]*\>",b))
 # cria rdf com usuarios, mensagens, horarios das mensagens

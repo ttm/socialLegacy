@@ -1,14 +1,20 @@
-import time, os, pickle, shutil, datetime, re
+import time, os, pickle, shutil, datetime, re, random
 #import networkx as x
 import rdflib as r
+from urllib.parse import quote
 import percolation as P
 c=P.utils.check
+def Q(string):
+    return quote(string).replace("%","")
+def B(abool):
+   if abool:
+       a=asdjkl
 
-def publishLog(fname,fpath,aname=None,scriptpath=None,created_at=None,channel_info="channel #labmarambira at Freenode"):
-    if nor aname:
+def publishLog(fname,fpath,aname=None,scriptpath=None,created_at=None,channel_info="channel #labmarambira at Freenode",donated_by="labMacambira.sf.net",latin=False):
+    if not aname:
         name=aname=fname.split(".")[0]
     if not created_at:
-        datetime_snapshot=datetime.datetime.now()
+        created_at=datetime.datetime.now()
     tg=P.rdf.makeBasicGraph([["po","irc"],[P.rdf.ns.po,P.rdf.ns.irc]],"My facebook ego friendship network")
     tg2=P.rdf.makeBasicGraph([["po","irc"],[P.rdf.ns.po,P.rdf.ns.irc]],"RDF metadata for the facebook friendship network of my son")
     ind=P.rdf.IC([tg2],P.rdf.ns.po.Snapshot,
@@ -26,9 +32,9 @@ def publishLog(fname,fpath,aname=None,scriptpath=None,created_at=None,channel_in
                           P.rdf.ns.po.acquiredThrough,
                           P.rdf.ns.rdfs.comment,
                           ],
-                          [datetime_snapshot,
+                          [created_at,
                            datetime.datetime.now(),
-                           name,
+                           donated_by,
                            "https://github.com/ttm/".format(aname),
                            "https://raw.githubusercontent.com/ttm/{}/master/base/{}".format(aname,fname.split("/")[-1]),
                            "https://raw.githubusercontent.com/ttm/{}/master/rdf/{}Translate.owl".format(aname,aname),
@@ -40,46 +46,76 @@ def publishLog(fname,fpath,aname=None,scriptpath=None,created_at=None,channel_in
                            ])
 
     with open(fname,"rb") as f:
-        t=f.read()
-    t=t.decode(errors="ignore")
+        t_=f.read()
+    if latin:
+        t=t_.decode("latin-1")
+    else:
+        t=t_.decode("utf-8",errors="ignore")
     # get users, messages, times
     d={}
-    exp=r"(\d{4})\-(\d{2})\-(\d{2})T(\d{2}):(\d{2}):(\d{2})  \<(.*)\> (.*)"
-    count=0
-    for match in re.findall(exp,aa):
+    exp=r"(\d{4})\-(\d{2})\-(\d{2})T(\d{2}):(\d{2}):(\d{2})  \<(.*?)\> (.*)"
+    # ver se estamos jogando algo fora TTM
+    count=1
+    timestamps=set()
+    for match in re.findall(exp,t, re.U):
         year, month, day, hour, minute, second, nick, msg=match
-        # achar direct message
-        directed_to=re.findall(r"^[^\s]*:"msg)
+        nick=Q(nick)
+        # achar direct message com virgula! TTM
+        directed_to=re.findall(r"(^[^\s:]+):",msg)
         if directed_to:
-            nick2=directed_to[0][:-1]
-            msg_=re.findall(r"^[^\s]*:\s*(.*)",msg)
-        dt=datetime.datetime(year,month,day,hour,minute,second)
-        # triplificar
+            nick2=Q(directed_to[0])
+            msg_=re.findall(r"^[^\s]*:\s*(.*)",msg)[0]
 
         # cria indivíduos: mensagem e usuarios para os nicks
         ind=P.rdf.IC([tg],P.rdf.ns.irc.Participant,"{}-{}".format(aname,nick))
+        #if "discutir se a prioridade" in msg:
+        #    wer=asd
         uris=[P.rdf.ns.irc.nick]
         data=[nick]
-        # usuario se conecta com o nick (strings)
         P.rdf.link([tg],ind,nick,uris,data)
+        # usuario se conecta com o nick (strings)
+        #P.rdf.link([tg],ind,nick,uris,data)
         if directed_to:
             ind2=P.rdf.IC([tg],P.rdf.ns.irc.Participant,"{}-{}".format(aname,nick2))
             data=[nick2]
-            P.rdf.link([tg],ind,nick,uris,data)
+            P.rdf.link([tg],ind2,nick2,uris,data)
 
         # mensagem se conecta com usuarios (URIS) e textos (strings)
-        imsg=P.rdf.IC([tg],P.rdf.ns.irc.Message,"{}-{}".format(aname,dt.isoformat()))
-        uris=[P.rdf.ns.irc.messageContent]
-        data=[msg]
+        dt=datetime.datetime(*[int(i) for i in (year,month,day,hour,minute,second)])
+        timestamp=dt.isoformat()
+        while timestamp in timestamps:
+            timestamp+='_r_%05x' % random.randrange(16**5)
+        timestamps.update(timestamp)
+        imsg=P.rdf.IC([tg],P.rdf.ns.irc.Message,"{}-{}".format(aname,timestamp))
+        if msg:
+            uris=[P.rdf.ns.irc.messageContent]
+            data=[msg]
+            if directed_to:
+                uris+=[P.rdf.ns.irc.cleanedMessage]
+                data+=[msg_]
+        else:
+            uris=[P.rdf.ns.irc.empty]
+            data=[True]
+            msg="EMPTYMSG"
+        uris+=[P.rdf.ns.irc.sentAt]
+        data+=[dt]
+        P.rdf.link([tg],imsg,msg,uris,data)
+            # adiciona tripla da msg para empty message true
+
+        uris=[P.rdf.ns.irc.author]
+        uris2=[ind]
         if directed_to:
-            uris+=[P.rdf.ns.irc.cleanedMessage]
-            data+=[msg_]
-        P.rdf.link_([tg],ind,nick,uris,data)
-        if count%1000==0:
+            uris+=[P.rdf.ns.irc.directedTo]
+            uris2+=[ind2]
+        P.rdf.link_([tg],imsg,msg,uris,uris2)
+
+        if (1+count)%1000==0:
             c("check 1000")
+        count+=1
     c("tudo em RDF")
     tg_=[tg[0]+tg2[0],tg[1]]
     fpath_="{}/{}/".format(fpath,aname)
+#    return fpath_, tg_,exp,t,t_
     P.rdf.writeAll(tg_,aname+"Translate",fpath_,False,1)
     # copia o script que gera este codigo
     if not os.path.isdir(fpath_+"scripts"):
