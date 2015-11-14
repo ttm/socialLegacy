@@ -20,9 +20,10 @@ fnames=[
     ("EconomiaCriativaDigital03032013.gdf",0,"economiacriativadigital","https://www.facebook.com/groups/economiacriativadigital/permalink/438313682916103/"),
     ("PoliticasCulturasBrasileiras08032013.gdf",0,"pcult","https://www.facebook.com/groups/pcult/permalink/519626544747423/"),
     ]
-fnames2=[("DanielPenalva18022013.gml","100006319395678","barthor.la.zule"),
-        ("CalebLuporini19022013.gml","1110305437","calebml"),
-        ("VilsonVieira18022013.gml","529899682","aut0mata"),
+#fnames2=[("DanielPenalva18022013.gml","100006319395678","barthor.la.zule"),
+#        ("CalebLuporini19022013.gml","1110305437","calebml"),
+#        ("VilsonVieira18022013.gml","529899682","aut0mata"),
+fname2=[
         ("ThaisTeixeiraFabbri_huge_100001089120349_2013_02_19_06_28_20b14681423b224363cad7233f074f38.gml","100001089120349","thais.t.fabbri"),
         ("RitaWu08042013.gml","100009639240215",0),
         ("RicardoFabbri_huge_1011765_2013_02_18_22_57_04c1993168b2d37f24e2ed2838af151e.gml","1011765","ricardofabbri"),
