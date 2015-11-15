@@ -97,6 +97,7 @@ def publishLog(fname,fpath,aname=None,scriptpath=None,created_at=None,channel_in
     # ver se estamos jogando algo fora TTM
     count=1
     timestamps=set()
+    mids=set()
     #for match in re.findall(exp,t):
 
     exp0=r"(\d{4})\-(\d{2})\-(\d{2})T(\d{2}):(\d{2}):(\d{2})  \*\*\* (\S+) (.*)"
@@ -113,7 +114,7 @@ def publishLog(fname,fpath,aname=None,scriptpath=None,created_at=None,channel_in
         timestamp=dt.isoformat()
         while timestamp in timestamps:
             timestamp+='_r_%05x' % random.randrange(16**5)
-        timestamps.update(timestamp)
+        timestamps.update([timestamp])
         imsg=P.rdf.IC([tg],P.rdf.ns.irc.Message,"{}-{}".format(aname,timestamp))
         if msg:
             uris=[P.rdf.ns.irc.messageContent]
@@ -155,7 +156,6 @@ def publishLog(fname,fpath,aname=None,scriptpath=None,created_at=None,channel_in
                     nicks3+=[tok]
         if nicks2:
             msg_=msg[msg.index(nicks2[-1])+len(nicks2[-1])+1:].lstrip()
-            if len(nicks2)>1:
         # cria indivíduos: mensagem e usuarios para os nicks
         ind=P.rdf.IC([tg],P.rdf.ns.irc.Participant,"{}-{}".format(aname,nick))
         #if "discutir se a prioridade" in msg:
@@ -184,7 +184,7 @@ def publishLog(fname,fpath,aname=None,scriptpath=None,created_at=None,channel_in
         timestamp=dt.isoformat()
         while timestamp in timestamps:
             timestamp+='_r_%05x' % random.randrange(16**5)
-        timestamps.update(timestamp)
+        timestamps.update([timestamp])
         imsg=P.rdf.IC([tg],P.rdf.ns.irc.Message,"{}-{}".format(aname,timestamp))
         if msg:
             uris=[P.rdf.ns.irc.messageContent]
