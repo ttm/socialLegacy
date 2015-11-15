@@ -1,4 +1,4 @@
-import time, os, pickle, shutil, datetime, re, random
+import time, os, pickle, shutil, datetime, re, random, string
 #import networkx as x
 import nltk as k
 import rdflib as r
@@ -139,14 +139,23 @@ def publishLog(fname,fpath,aname=None,scriptpath=None,created_at=None,channel_in
         year, month, day, hour, minute, second, nick, msg=match
         nick=Q(nick)
         # achar direct message com virgula! TTM
-        directed_to=re.findall(r"(^[^\s:]+):",msg)
-        if directed_to:
-            if directed_to[0] not in NICKS:
-                directed_to=[]
-            else:
-                nick2=Q(directed_to[0])
-                msg_=re.findall(r"^[^\s]*:\s*(.*)",msg)[0]
 
+        toks=k.word_tokenize(msg)
+        toks=[i for i in toks if i not in set(string.punctuation)]
+        nicks2=[] # for directed messages at
+        nicks3=[] # for mentioned fellows
+        direct=1
+        for tok in toks:
+            if tok not in NICKS:
+                direct=0
+            else:
+                if direct:
+                    nicks2+=[tok]
+                else:
+                    nicks3+=[tok]
+        if nicks2:
+            msg_=msg[msg.index(nicks2[-1])+len(nicks2[-1])+1:].lstrip()
+            if len(nicks2)>1:
         # cria indivíduos: mensagem e usuarios para os nicks
         ind=P.rdf.IC([tg],P.rdf.ns.irc.Participant,"{}-{}".format(aname,nick))
         #if "discutir se a prioridade" in msg:
@@ -156,10 +165,19 @@ def publishLog(fname,fpath,aname=None,scriptpath=None,created_at=None,channel_in
         P.rdf.link([tg],ind,nick,uris,data)
         # usuario se conecta com o nick (strings)
         #P.rdf.link([tg],ind,nick,uris,data)
-        if directed_to:
-            ind2=P.rdf.IC([tg],P.rdf.ns.irc.Participant,"{}-{}".format(aname,nick2))
-            data=[nick2]
-            P.rdf.link([tg],ind2,nick2,uris,data)
+        inds2=[]
+        for nickfoo in nicks2:
+            nickfoo=Q(nickfoo)
+            ind2=P.rdf.IC([tg],P.rdf.ns.irc.Participant,"{}-{}".format(aname,nickfoo))
+            data =[nickfoo]
+            uris =[P.rdf.ns.irc.nick]
+            P.rdf.link([tg],ind2,nickfoo,uris,data)
+            inds2+=[ind2]
+        inds3=[]
+        for nickfoo in nicks3:
+            nickfoo=Q(nickfoo)
+            ind3=P.rdf.IC([tg],P.rdf.ns.irc.Participant,"{}-{}".format(aname,nickfoo))
+            inds3+=[ind3]
 
         # mensagem se conecta com usuarios (URIS) e textos (strings)
         dt=datetime.datetime(*[int(i) for i in (year,month,day,hour,minute,second)])
@@ -171,7 +189,7 @@ def publishLog(fname,fpath,aname=None,scriptpath=None,created_at=None,channel_in
         if msg:
             uris=[P.rdf.ns.irc.messageContent]
             data=[msg]
-            if directed_to:
+            if nicks2:
                 uris+=[P.rdf.ns.irc.cleanedMessage]
                 data+=[msg_]
         else:
@@ -185,10 +203,16 @@ def publishLog(fname,fpath,aname=None,scriptpath=None,created_at=None,channel_in
 
         uris=[P.rdf.ns.irc.author]
         uris2=[ind]
-        if directed_to:
+        for ind2 in inds2:
             uris+=[P.rdf.ns.irc.directedTo]
             uris2+=[ind2]
-        P.rdf.link_([tg],imsg,msg,uris,uris2)
+        uris3=[]
+        for ind3 in inds3:
+            uris+=[P.rdf.ns.irc.mentions]
+            uris3+=[ind3]
+        uris23=uris2+uris3
+
+        P.rdf.link_([tg],imsg,msg,uris,uris23)
 
         if (1+count)%1000==0:
             if Tbreak: break
@@ -215,7 +239,7 @@ def publishLog(fname,fpath,aname=None,scriptpath=None,created_at=None,channel_in
     dates=[i for i in tg_[0].query(r"SELECT ?p WHERE {?s irc:sentAt ?p} ORDER BY ASC(?p)")]
     date1=dates[0][0].value
     date2=dates[1][0].value
-
+    return tg_
     #nicks=queryMe(tg_[0],"SELECT ?s ?o WHERE {?s irc:nick ?o}")
     nnicks=countMe(tg_[0],"irc:nick")
     nicks=getAll(  tg_[0],"irc:nick")
