@@ -21,7 +21,7 @@ for fname in fnames:
             fname_="labMacambiraLaleniaLog2"
         else:
             fname_="labMacambiraLaleniaLog3"
-    b=S.irc.publishLog("../data/irc/{}".format(fname),fpath,fname_,scriptpath,datetime.date(2015, 10, 15) ,latin=True)
+    b=S.irc.publishLog("../data/irc/{}".format(fname),fpath,fname_,scriptpath,datetime.date(2015, 10, 15), "the {} IRC channel log".format(fname), latin=True)
     c("finished " + fname)
 #b=S.irc.publishLog("../data/irc/labmacambira_lalenia3.txt",fpath,"labMacambiraLaleniaLog3",scriptpath,datetime.date(2015, 10, 15) ,latin=True)
 #b=S.irc.publishLog("../data/irc/labmacambira_lalenia3.txt",fpath,"labMacambiraLaleniaLog3",scriptpath,datetime.date(2015, 10, 15) ,latin=True)

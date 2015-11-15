@@ -1,24 +1,25 @@
 import twython as T, pickle, maccess, percolation as P, time
 c=P.utils.check
-twitter=T.Twython(app_key=            maccess.tw5.tak ,
-                  app_secret=         maccess.tw5.taks,
-                  oauth_token=        maccess.tw5.tat ,
-                  oauth_token_secret= maccess.tw5.tats)
+twitter=T.Twython(app_key=            maccess.tw6.tak ,
+                  app_secret=         maccess.tw6.taks,
+                  oauth_token=        maccess.tw6.tat ,
+                  oauth_token_secret= maccess.tw6.tats)
 #search = twitter.search_gen('#g1')
 c("antes do search")
-#search = twitter.search_gen('#python')
+search = twitter.search_gen('#python')
 #search = twitter.search_gen('#prayforthephilippines')
 #search = twitter.search_gen('felipao')
 #search = twitter.search_gen('#ReadyForScorch')
 #search = twitter.search_gen('#obama')
 #search = twitter.search_gen('#dilma')
-search = twitter.search_gen('#OMundoSeriaMelhorSe')
+#search = twitter.search_gen('#OMundoSeriaMelhorSe')
 #search = twitter.search_gen('#science')
 rr=[]
 c("antes do loop")
 for result in search:
     rr.append(result)
-    c("loop"); time.sleep(63)
+    c("loop")#; time.sleep(63)
+P.utils.pDump(rr,"afailename.pickle")
 
 #f=open("pickleDir/tweetsHASHdilma.pickle","wb")
 #pickle.dump(rr,f,-1)
