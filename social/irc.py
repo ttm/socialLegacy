@@ -55,8 +55,8 @@ def publishLog(fname,fpath,aname=None,scriptpath=None,created_at=None,channel_in
         name=aname=fname.split(".")[0]
     if not created_at:
         created_at=datetime.datetime.now()
-    tg=P.rdf.makeBasicGraph([["po","irc"],[P.rdf.ns.po,P.rdf.ns.irc]],"My facebook ego friendship network")
-    tg2=P.rdf.makeBasicGraph([["po","irc"],[P.rdf.ns.po,P.rdf.ns.irc]],"RDF metadata for the facebook friendship network of my son")
+    tg=P.rdf.makeBasicGraph([["po","irc"],[P.rdf.ns.po,P.rdf.ns.irc]],"IRC log linked data")
+    tg2=P.rdf.makeBasicGraph([["po","irc"],[P.rdf.ns.po,P.rdf.ns.irc]],"RDF metadata IRC log")
     ind=P.rdf.IC([tg2],P.rdf.ns.po.Snapshot,
             aname,"Snapshot {}".format(aname))
     P.rdf.link([tg2],ind,"Snapshot {}".format(aname),
@@ -75,7 +75,7 @@ def publishLog(fname,fpath,aname=None,scriptpath=None,created_at=None,channel_in
                           [created_at,
                            datetime.datetime.now(),
                            donated_by,
-                           "https://github.com/ttm/".format(aname),
+                           "https://github.com/ttm/{}".format(aname),
                            "https://raw.githubusercontent.com/ttm/{}/master/base/{}".format(aname,fname.split("/")[-1]),
                            "https://raw.githubusercontent.com/ttm/{}/master/rdf/{}Translate.owl".format(aname,aname),
                            "https://raw.githubusercontent.com/ttm/{}/master/rdf/{}Translate.ttl".format(aname,aname),
@@ -239,7 +239,7 @@ def publishLog(fname,fpath,aname=None,scriptpath=None,created_at=None,channel_in
     dates=[i for i in tg_[0].query(r"SELECT ?p WHERE {?s irc:sentAt ?p} ORDER BY ASC(?p)")]
     date1=dates[0][0].value
     date2=dates[1][0].value
-    return tg_
+    #return tg_
     #nicks=queryMe(tg_[0],"SELECT ?s ?o WHERE {?s irc:nick ?o}")
     nnicks=countMe(tg_[0],"irc:nick")
     nicks=getAll(  tg_[0],"irc:nick")

@@ -66,7 +66,7 @@ def triplifyGML(fname="foo.gml",fpath="./fb/",scriptpath=None,uid=None,sid=None)
                           [datetime_snapshot,
                            datetime.datetime.now(),
                            name,
-                           "https://github.com/ttm/".format(aname),
+                           "https://github.com/ttm/{}".format(aname),
                            "https://raw.githubusercontent.com/ttm/{}/master/base/{}".format(aname,fname.split("/")[-1]),
                            "https://raw.githubusercontent.com/ttm/{}/master/rdf/{}Translate.owl".format(aname,aname),
                            "https://raw.githubusercontent.com/ttm/{}/master/rdf/{}Translate.ttl".format(aname,aname),

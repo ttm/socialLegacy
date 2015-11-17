@@ -1,54 +1,111 @@
-import pickle, percolation as P
+import pickle, datetime, os, shutil
+import percolation as P
 from twython import Twython
 from maccess import tw2 as tw
+c=P.utils.check
 
 
-def publishSearch(fname,fpath,aname=None,scriptpath=None,created_at=None,tweets_info="probably tweets with a hashtag or about a topic",donated_by="labMacambira.sf.net",latin=False,utf8_fix=True):
+def publishSearch(fname,fpath,aname=None,scriptpath=None,created_at=None,tweets_info="a hashtag or a topic (probably)",donated_by="labMacambira.sf.net",latin=False,utf8_fix=True,acquired_through="Twitter search engine"):
+    if not aname:
+        print(fname,aname)
+        aname=fname.split("/")[-1].split(".")[0]
+    tg=P.rdf.makeBasicGraph([["po","tw"],[P.rdf.ns.po,P.rdf.ns.tw]],"Twitter messages linked data")
+    tg2=P.rdf.makeBasicGraph([["po","tw"],[P.rdf.ns.po,P.rdf.ns.irc]],"Metadata for the snapshot of Twitter messages")
+    ind=P.rdf.IC([tg2],P.rdf.ns.po.Snapshot,
+            aname,"Snapshot {}".format(aname))
+    P.rdf.link([tg2],ind,"Snapshot {}".format(aname),
+                          [P.rdf.ns.po.createdAt,
+                          P.rdf.ns.po.triplifiedIn,
+                          P.rdf.ns.po.donatedBy,
+                          P.rdf.ns.po.availableAt,
+                          P.rdf.ns.po.originalFile,
+                          P.rdf.ns.po.rdfFile,
+                          P.rdf.ns.po.ttlFile,
+                          P.rdf.ns.po.discorveryRDFFile,
+                          P.rdf.ns.po.discoveryTTLFile,
+                          P.rdf.ns.po.acquiredThrough,
+                          P.rdf.ns.rdfs.comment,
+                          ],
+                          [created_at,
+                           datetime.datetime.now(),
+                           donated_by,
+                           "https://github.com/ttm/{}".format(aname),
+                           "https://raw.githubusercontent.com/ttm/{}/master/base/{}".format(aname,fname.split("/")[-1]),
+                           "https://raw.githubusercontent.com/ttm/{}/master/rdf/{}Translate.owl".format(aname,aname),
+                           "https://raw.githubusercontent.com/ttm/{}/master/rdf/{}Translate.ttl".format(aname,aname),
+                                "https://raw.githubusercontent.com/ttm/{}/master/rdf/{}Meta.owl".format(aname,aname),
+                                "https://raw.githubusercontent.com/ttm/{}/master/rdf/{}Meta.ttl".format(aname,aname),
+                           acquired_through,
+                                "The Twitter messages related to {}".format(tweets_info),
+                           ])
+
+
     tweets=P.utils.pRead(fname)
     for tweet in tweets:
         tid=tweet["id"]
-        uid=tweet["user"]["screen_name"]
         imsg=P.rdf.IC([tg],P.rdf.ns.tw.Message,tid)
 
+        uris=[P.rdf.ns.tw.messageID]
+        data=[tid]
 
-                text=tweet["text"]
-        uris=[P.rdf.ns.tw.messageContent]
-        data=[text]
+        msg=tweet["text"]
+        uris+=[P.rdf.ns.tw.messageContent]
+        data+=[msg]
+
         uris+=[P.rdf.ns.tw.retweetCount]
         data+=[tweet["retweet_count"]]
-
-        uris+=[P.rdf.ns.tw.retweeted]
-        data+=[tweet["retweeted"]]
-        if "retweeted_status" in tweet.keys():
-            tid2=tweet["retweeted_status"]["id"]
-            imsg2=P.rdf.IC([tg],P.rdf.ns.tw.Message,tid2)
-            data+=[tid]
-            uris+=[P.rdf.ns.tw.messageID]
-            data+=[tweet["retweeted_status"]["text"]]
-            uris+=[P.rdf.ns.tw.messageContent]
-
-            uid2=tweet["retweeted_status"]["user"]["id"]
-            iuser=P.rdf.IC([tg],P.rdf.ns.tw.Participant,uid2)
-            data+=[tweet["retweeted_status"]["user"]["screen_name"]
-            uris+=[P.rdf.ns.tw.sid]
-            data+=[uid2]
-            uris+=[P.rdf.ns.tw.uid]
-            data+=[tweet["retweeted_status"]["user"]["name"]]
-            uris+=[P.rdf.ns.tw.name]
 
         uris+=[P.rdf.ns.tw.lang]
         data+=[tweet["lang"]]
 
-        if tweet["in_reply_to_user_id"]:
-            data+=[tweet["in_reply_to_user_id"]] #
-            uris+=[P.rdf.ns.tw.inReplyTo]
+        uris+=[P.rdf.ns.tw.sentAt]
+        data+=[tweet["created_at"]]
 
-        iuser=P.rdf.IC([tg],P.rdf.ns.tw.Participant,uid)
-        data+=[uid]
-        uris+=[P.rdf.ns.tw.screenName]
+        if tweet["in_reply_to_user_id"]:
+            uris+=[P.rdf.ns.tw.inReplyToUID]
+            data+=[tweet["in_reply_to_user_id"]]
+
+        P.rdf.link([tg],imsg,msg,uris,data)
+
+        if "retweeted_status" in tweet.keys():
+            tid2=tweet["retweeted_status"]["id"]
+            imsg2=P.rdf.IC([tg],P.rdf.ns.tw.Message,tid2)
+
+            uris=[P.rdf.ns.tw.messageID]
+            data=[tid2]
+
+            uris+=[P.rdf.ns.tw.messageContent]
+            data+=[tweet["retweeted_status"]["text"]]
+
+            P.rdf.link([tg],imsg,msg,uris,data)
+
+            sid2=tweet["retweeted_status"]["user"]["screen_name"]
+            iuser2=P.rdf.IC([tg],P.rdf.ns.tw.Participant,sid2)
+
+            uris=[P.rdf.ns.tw.sid]
+            data=[sid2]
+
+            uris+=[P.rdf.ns.tw.uid]
+            data+=[tweet["retweeted_status"]["user"]["id"]]
+
+            data+=[tweet["retweeted_status"]["user"]["name"]]
+            uris+=[P.rdf.ns.tw.name]
+
+            P.rdf.link([tg],iuser2,sid2,uris,data)
+
+        sid=tweet["user"]["screen_name"]
+        iuser=P.rdf.IC([tg],P.rdf.ns.tw.Participant,sid)
+
+        uris=[P.rdf.ns.tw.sid]
+        data=[sid]
+
+        uris+=[P.rdf.ns.tw.uid]
+        data+=[tweet["user"]["id"]]
+
         if tweet["user"]["location"]:
-            data+=[tweet["user"]["location"]]
             uris+=[P.rdf.ns.tw.uLocation]
+            data+=[tweet["user"]["location"]]
+
         data+=[tweet["user"]["favourites_count"]]
         uris+=[P.rdf.ns.tw.favouritesCount]
         data+=[tweet["user"]["followers_count"]]
@@ -57,12 +114,60 @@ def publishSearch(fname,fpath,aname=None,scriptpath=None,created_at=None,tweets_
         uris+=[P.rdf.ns.tw.friendsCount]
         data+=[tweet["user"]["utc_offset"]]
         uris+=[P.rdf.ns.tw.utcOffset]
+        P.rdf.link([tg],iuser,sid,uris,data)
+
+        uris2=[P.rdf.ns.tw.author]
+        data=[iuser]
+        if "retweeted_status" in tweet.keys():
+            uris+=[P.rdf.ns.tw.retweetOf]
+            uris2+=[imsg2]
+        P.rdf.link_([tg],imsg,msg,uris,uris2)
+
+        # linka msg com usuarios
+        # e usuarios entre si?
 
         # achar a id da mensagem aa qual esta eh retweet ou resposta
         # fazer as uris corretamente para o user e o reply to
         # achar as hashtags e colocar jah
 
-    return tweets,len(tweets)
+    c("tudo em RDF")
+    tg_=[tg[0]+tg2[0],tg[1]]
+    fpath_="{}/{}/".format(fpath,aname)
+    P.rdf.writeAll(tg_,aname+"Translate",fpath_,False,1)
+
+    if not os.path.isdir(fpath_+"scripts"):
+        os.mkdir(fpath_+"scripts")
+    shutil.copy(scriptpath,fpath_+"scripts/")
+    if not os.path.isdir(fpath_+"base"):
+        os.mkdir(fpath_+"base")
+    shutil.copy(fname,fpath_+"base/")
+    P.rdf.writeAll(tg2,aname+"Meta",fpath_,1)
+
+    # faz um README
+    dates=[i for i in tg_[0].query(r"SELECT ?p WHERE {?s tw:sentAt ?p} ORDER BY ASC(?p)")]
+    date1=dates[0][0].value
+    date2=dates[1][0].value
+    #return tg_
+    #nicks=queryMe(tg_[0],"SELECT ?s ?o WHERE {?s irc:nick ?o}")
+
+    nnicks=P.utils.countMe(tg_[0],"tw:author")
+    nicks= P.utils.getAll(  tg_[0],"tw:author")
+
+    nreplies= P.utils.countMe(tg_[0],"tw:replyTo")
+    nretweets=P.utils.countMe(  tg_[0],"tw:retweetOf")
+    nmsgs=    P.utils.countMe(  tg_[0], "tw:messageContent","true")
+    with open(fpath_+"README","w") as f:
+        f.write("""This repo delivers RDF data from the Twitter messages about {}
+collected around {}, with messages from {} to {} and {} users.
+Total messages count {} of which {} replies and {} retweets
+The linked data is available at rdf/ dir and was
+generated by the routine in the script/ directory.
+Original data from lalenia (a Supybot) in data/\n
+\nNICKS: {}\n""".format(
+            tweets_info,created_at,date1,date2,
+            nnicks,nmsgs,nreplies,nretweets,nicks))
+    return tg_
+
 
 class Twitter:
     """Simplified Twitter interface for Stability observance

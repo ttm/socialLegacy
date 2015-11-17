@@ -11,8 +11,8 @@ fpath="./publishing/irc/"
 
 #fnames="labmacambira_lalenia2.txt","labmacambira_lalenia3.txt","#foradoeixo.log","#hackerspace-cps.log","#hackerspaces-br.log","#matehackers.log"
 fnames=["labmacambira_lalenia2.txt",]
-fnames=["labmacambira_lalenia3.txt",]
-fnames+=["#foradoeixo.log","#hackerspace-cps.log","#hackerspaces-br.log","#matehackers.log"]
+#fnames=["labmacambira_lalenia3.txt",]
+fnames=["#foradoeixo.log","#hackerspace-cps.log","#hackerspaces-br.log","#matehackers.log"]
 for fname in fnames:
     if "#" in fname:
         fname_=fname[1:-4]
