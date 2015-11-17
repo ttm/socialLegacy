@@ -1,6 +1,9 @@
 import pickle, datetime, os, shutil
 import percolation as P
 from twython import Twython
+import parsedatetime as pdt
+parser=pdt.Calendar()
+from dateutil.parser import parse
 from maccess import tw2 as tw
 c=P.utils.check
 
@@ -59,7 +62,8 @@ def publishSearch(fname,fpath,aname=None,scriptpath=None,created_at=None,tweets_
         data+=[tweet["lang"]]
 
         uris+=[P.rdf.ns.tw.sentAt]
-        data+=[tweet["created_at"]]
+        date=parse(tweet["created_at"])
+        data+=[date]
 
         if tweet["in_reply_to_user_id"]:
             uris+=[P.rdf.ns.tw.inReplyToUID]
@@ -166,7 +170,7 @@ Original data from lalenia (a Supybot) in data/\n
 \nNICKS: {}\n""".format(
             tweets_info,created_at,date1,date2,
             nnicks,nmsgs,nreplies,nretweets,nicks))
-    return tg_
+    return tg_, tweets
 
 
 class Twitter:
