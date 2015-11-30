@@ -13,7 +13,7 @@ def publishSearch(fname,fpath,aname=None,scriptpath=None,created_at=None,tweets_
         print(fname,aname)
         aname=fname.split("/")[-1].split(".")[0]
     tg=P.rdf.makeBasicGraph([["po","tw"],[P.rdf.ns.po,P.rdf.ns.tw]],"Twitter messages linked data")
-    tg2=P.rdf.makeBasicGraph([["po","tw"],[P.rdf.ns.po,P.rdf.ns.irc]],"Metadata for the snapshot of Twitter messages")
+    tg2=P.rdf.makeBasicGraph([["po","tw"],[P.rdf.ns.po,P.rdf.ns.tw]],"Metadata for the snapshot of Twitter messages")
     ind=P.rdf.IC([tg2],P.rdf.ns.po.Snapshot,
             aname,"Snapshot {}".format(aname))
     P.rdf.link([tg2],ind,"Snapshot {}".format(aname),
@@ -45,7 +45,7 @@ def publishSearch(fname,fpath,aname=None,scriptpath=None,created_at=None,tweets_
 
     tweets=P.utils.pRead(fname)
     for tweet in tweets:
-        tid=tweet["id"]
+        tid=tweet["id_str"]
         imsg=P.rdf.IC([tg],P.rdf.ns.tw.Message,tid)
 
         uris=[P.rdf.ns.tw.messageID]
@@ -72,7 +72,7 @@ def publishSearch(fname,fpath,aname=None,scriptpath=None,created_at=None,tweets_
         P.rdf.link([tg],imsg,msg,uris,data)
 
         if "retweeted_status" in tweet.keys():
-            tid2=tweet["retweeted_status"]["id"]
+            tid2=tweet["retweeted_status"]["id_str"]
             imsg2=P.rdf.IC([tg],P.rdf.ns.tw.Message,tid2)
 
             uris=[P.rdf.ns.tw.messageID]
@@ -90,7 +90,7 @@ def publishSearch(fname,fpath,aname=None,scriptpath=None,created_at=None,tweets_
             data=[sid2]
 
             uris+=[P.rdf.ns.tw.uid]
-            data+=[tweet["retweeted_status"]["user"]["id"]]
+            data+=[tweet["retweeted_status"]["user"]["id_str"]]
 
             data+=[tweet["retweeted_status"]["user"]["name"]]
             uris+=[P.rdf.ns.tw.name]
@@ -104,7 +104,7 @@ def publishSearch(fname,fpath,aname=None,scriptpath=None,created_at=None,tweets_
         data=[sid]
 
         uris+=[P.rdf.ns.tw.uid]
-        data+=[tweet["user"]["id"]]
+        data+=[tweet["user"]["id_str"]]
 
         if tweet["user"]["location"]:
             uris+=[P.rdf.ns.tw.uLocation]
@@ -120,8 +120,8 @@ def publishSearch(fname,fpath,aname=None,scriptpath=None,created_at=None,tweets_
         uris+=[P.rdf.ns.tw.utcOffset]
         P.rdf.link([tg],iuser,sid,uris,data)
 
-        uris2=[P.rdf.ns.tw.author]
-        data=[iuser]
+        uris=[P.rdf.ns.tw.author]
+        uris2=[iuser]
         if "retweeted_status" in tweet.keys():
             uris+=[P.rdf.ns.tw.retweetOf]
             uris2+=[imsg2]
@@ -154,7 +154,7 @@ def publishSearch(fname,fpath,aname=None,scriptpath=None,created_at=None,tweets_
     #return tg_
     #nicks=queryMe(tg_[0],"SELECT ?s ?o WHERE {?s irc:nick ?o}")
 
-    nnicks=P.utils.countMe(tg_[0],"tw:author")
+    nnicks=P.utils.countMe( tg_[0],"tw:author")
     nicks= P.utils.getAll(  tg_[0],"tw:author")
 
     nreplies= P.utils.countMe(tg_[0],"tw:replyTo")

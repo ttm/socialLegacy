@@ -67,7 +67,7 @@ def publishLog(fname,fpath,aname=None,scriptpath=None,created_at=None,channel_in
                           P.rdf.ns.po.originalFile,
                           P.rdf.ns.po.rdfFile,
                           P.rdf.ns.po.ttlFile,
-                          P.rdf.ns.po.discorveryRDFFile,
+                          P.rdf.ns.po.discoveryRDFFile,
                           P.rdf.ns.po.discoveryTTLFile,
                           P.rdf.ns.po.acquiredThrough,
                           P.rdf.ns.rdfs.comment,
