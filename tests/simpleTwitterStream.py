@@ -4,14 +4,15 @@ importlib.reload(S.tw)
 importlib.reload(P.utils)
 import maccess
 c=P.utils.check
-ttag,tid="#MAMA2015",2
 ttag,tid="#SyriaVote",1
 ttag,tid="#art",6
 ttag,tid="#god",7
 ttag,tid="#porn",4 #fuck pouco pouquissimo fluxo, tentar #porn
 ttag,tid="#ChennaiFloods",3
 ttag,tid="#QuartaSemRacismoClubeSDV",0
-ttag,tid="#evil",8 #shit pouquissimo fluxo, tentar #devil ou #evil
+ttag,tid="#obama",5
+ttag,tid="#SnapDetremura",8
+ttag,tid="#MAMA2015",2
 
 tws=S.tw.Twitter(*P.utils.cred(maccess.TW[tid]))
 #tws.streamTag(ttag)
