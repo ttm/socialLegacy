@@ -34,11 +34,17 @@ fnames2=[
         ("MariliaMelloPisani_huge_100000812625301_2013_04_10_02_55_f5180b675e47066391deda07c3970ec2.gml","100000812625301","marilia.pisani"),
         ("LuisCirne07032013.gml","717903828","lufcirne"),
         ("LailaManuelle_1713144485_2013_01_17_02_58_7ef03eec79f843f1e6834acd13f077bf.gml","1713144485","laila.manuelle")]
+fnames3=[
+        ("LailaManuelle_1713144485_2013_01_17_02_58_7ef03eec79f843f1e6834acd13f077bf.gdf","1713144485","laila.manuelle"),
+        ("RafaelReinehr_huge_814059950_2013_04_09_11_48_df060d634d2332e8070b6a9f1fb58124.gdf","814059950","reinehr"),
+        ("PedroPauloRocha10032013.gdf","836944624","dpedropaulorocha"),
+        ]
 # para achar o id numerico, visito a página e procuro
 # pela tag 5h60. O profile_owner tem o id correto.
 # jah o id string nao consegui achar no caso da rita
 #fnames_=fnames+fnames2
-fnames_=fnames2[3:]
+#fnames_=fnames2[7:-1]
+fnames_=fnames3[1:][::-1]
 # achar as redes de interacoes, publicar todo mundo
 # aos pares
 
@@ -48,9 +54,14 @@ scriptpath=os.path.realpath(__file__)
 # idealmente todos os arquivos gdf e gml no data/fb/
 for dataset in fnames_:
     fname=dataset[0]
+    c(fname)
     if fname[-3:]=="gdf":
         fname_=tdir.format("gdf")+fname
-        uid,sid,dlink=dataset[1:]
+        if len(dataset)==4:
+            uid,sid,dlink=dataset[1:]
+        else:
+            uid,sid=dataset[1:]
+            dlink=None
         S.fb.triplifyGDF(fname_,fpath,scriptpath,uid,sid,dlink)
         tnameF=re.findall("([a-zA-Z]*)\d*.gdf",fname)[0]
         tfiles=[i for i in os.listdir(tdir.format("gdf")) if (tnameF in i) and ("ntera" in i)]
