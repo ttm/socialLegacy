@@ -23,7 +23,7 @@ fnames=[
 #fnames2=[("DanielPenalva18022013.gml","100006319395678","barthor.la.zule"),
 #        ("CalebLuporini19022013.gml","1110305437","calebml"),
 #        ("VilsonVieira18022013.gml","529899682","aut0mata"),
-fname2=[
+fnames2=[
         ("ThaisTeixeiraFabbri_huge_100001089120349_2013_02_19_06_28_20b14681423b224363cad7233f074f38.gml","100001089120349","thais.t.fabbri"),
         ("RitaWu08042013.gml","100009639240215",0),
         ("RicardoFabbri_huge_1011765_2013_02_18_22_57_04c1993168b2d37f24e2ed2838af151e.gml","1011765","ricardofabbri"),
@@ -38,7 +38,7 @@ fname2=[
 # pela tag 5h60. O profile_owner tem o id correto.
 # jah o id string nao consegui achar no caso da rita
 #fnames_=fnames+fnames2
-fnames_=fnames2
+fnames_=fnames2[3:]
 # achar as redes de interacoes, publicar todo mundo
 # aos pares
 
