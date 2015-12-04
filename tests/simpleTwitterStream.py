@@ -12,10 +12,11 @@ ttag,tid="#SnapDetremura",8
 #ttag,tid="#physics",2 #pouco fluxo
 ttag,tid="#music",2 #pouco fluxo
 ttag,tid="#obama",5
-ttag,tid="#god",7
 ttag,tid="#game",3
 ttag,tid="#science",6
 ttag,tid="#dilma",6
+ttag,tid="#ForaCunha",8
+ttag,tid="#god",7
 # deixar algumas tags com pouco fluxo puxando por dias
 # fuck physics shit brasil dilma europe africa etc.
 

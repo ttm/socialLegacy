@@ -264,13 +264,13 @@ def publishLog2(fdir,fpath,aname=None,scriptpath=None,created_at=None,channel_in
     # copia do base data
     if not os.path.isdir(fpath_+"base"):
         os.mkdir(fpath_+"base")
-    shutil.copy(fname,fpath_+"base/")
+    shutil.copytree(fdir,fpath_+"base/all")
     P.rdf.writeAll(tg2,aname+"Meta",fpath_,1)
     # faz um README
     # make analysis from graph
     dates=[i for i in tg_[0].query(r"SELECT ?p WHERE {?s irc:sentAt ?p} ORDER BY ASC(?p)")]
     date1=dates[0][0].value
-    date2=dates[1][0].value
+    date2=dates[-1][0].value
     #return tg_
     #nicks=queryMe(tg_[0],"SELECT ?s ?o WHERE {?s irc:nick ?o}")
     nnicks=countMe(tg_[0],"irc:nick")
@@ -486,7 +486,7 @@ def publishLog(fname,fpath,aname=None,scriptpath=None,created_at=None,channel_in
     # make analysis from graph
     dates=[i for i in tg_[0].query(r"SELECT ?p WHERE {?s irc:sentAt ?p} ORDER BY ASC(?p)")]
     date1=dates[0][0].value
-    date2=dates[1][0].value
+    date2=dates[-1][0].value
     #return tg_
     #nicks=queryMe(tg_[0],"SELECT ?s ?o WHERE {?s irc:nick ?o}")
     nnicks=countMe(tg_[0],"irc:nick")

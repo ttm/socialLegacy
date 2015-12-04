@@ -17,7 +17,7 @@ fdirs="#wikimedia-dev","#wikimedia-wikidata","#mediawiki",
 dpath="../data/irc/"
 for fdir in fdirs: print(os.path.isdir(dpath+fdir))
 for fdir in fdirs:
-    b=S.irc.publishLog2("../data/irc/{}".format(fdir),fpath,None,scriptpath,datetime.date(2015, 10, 15), "the {} IRC channel log".format(fdir), latin=False)
+    b=S.irc.publishLog2("../data/irc/{}".format(fdir),fpath,None,scriptpath,datetime.datetime.now(), "the {} IRC channel log".format(fdir), latin=False)
     c("finished " + fdir)
 #b=S.irc.publishLog("../data/irc/labmacambira_lalenia3.txt",fpath,"labMacambiraLaleniaLog3",scriptpath,datetime.date(2015, 10, 15) ,latin=True)
 #b=S.irc.publishLog("../data/irc/labmacambira_lalenia3.txt",fpath,"labMacambiraLaleniaLog3",scriptpath,datetime.date(2015, 10, 15) ,latin=True)
