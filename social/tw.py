@@ -12,7 +12,9 @@ c=P.utils.check
 def publishSearch(fname,fpath,aname=None,scriptpath=None,created_at=None,tweets_info="a hashtag or a topic (probably)",donated_by="labMacambira.sf.net",latin=False,utf8_fix=True,acquired_through="Twitter search engine"):
     if not aname:
         print(fname,aname)
-        aname=fname.split("/")[-1].split(".")[0]+"_tw"
+        aname=fname.split("/")[-1].split(".")[0]
+        if not aname.endswith("_tw"):
+            aname+="_tw"
 
     tg2=P.rdf.makeBasicGraph([["po","tw"],[P.rdf.ns.po,P.rdf.ns.tw]],"Metadata for the snapshot of Twitter messages")
     ind=P.rdf.IC([tg2],P.rdf.ns.po.Snapshot,
@@ -43,12 +45,23 @@ def publishSearch(fname,fpath,aname=None,scriptpath=None,created_at=None,tweets_
                                 "The Twitter messages related to {}".format(tweets_info),
                            ])
 
-
-    tweets=P.utils.pRead2( fname)
-    if both:
-        tweets2=P.utils.pRead2(fname.replace(".pickle","_.pickle"))
-        tweets=tweets+tweets2
-    tweet_chuncks=[tweets[i:i+10000] for i in range(0,len(tweets),10000)]
+    tweets=[]
+    try:
+        tweets+=P.utils.pRead2( fname)[0]
+    except:
+        c("nao tem " +fname)
+    #try:
+    #    tweets+=P.utils.pRead2(fname.replace(".pickle","_.pickle"))
+    #except:
+    #    c("nao tem " +fname.replace(".pickle","_.pickle"))
+    fname__=fname.replace(".pickle","_.pickle")
+    if os.path.isfile(fname__):
+        tweets,fopen=P.utils.pRead3(fname__,tweets)
+    #tweets=[i for j in tweets for i in j][:10000*30]
+    #tweet_chuncks=[tweets[i:i+10000] for i in range(0,len(tweets),10000)]
+    #tweets=[i for j in tweets for i in j][:270]
+    #tweet_chuncks=[tweets[i:i+100] for i in range(0,len(tweets),100)]
+#    tweet_chuncks=[tweets[i:i+100] for i in range(0,len(tweets),100)]
     ccount=0
     fpath_="{}/{}/".format(fpath,aname)
     nnicks=0
@@ -56,9 +69,13 @@ def publishSearch(fname,fpath,aname=None,scriptpath=None,created_at=None,tweets_
     nreplies=0
     nretweets=0
     nmsgs=0
-    for chunck in tweets_chuncks:
+    dates1=[]
+    dates2=[]
+    #for chunck in tweet_chuncks:
+    while tweets:
+        c("chunck {}".format(ccount))
         tg=P.rdf.makeBasicGraph([["po","tw"],[P.rdf.ns.po,P.rdf.ns.tw]],"Twitter messages linked data, chuck {:05d}".format(ccount))
-        for tweet in chunck:
+        for tweet in tweets:
             tid=tweet["id_str"]
             imsg=P.rdf.IC([tg],P.rdf.ns.tw.Message,tid)
 
@@ -92,7 +109,7 @@ def publishSearch(fname,fpath,aname=None,scriptpath=None,created_at=None,tweets_
                 uris=[P.rdf.ns.tw.messageID]
                 data=[tid2]
 
-                uris+=[P.rdf.ns.tw.messageContent]
+                uris+=[P.rdf.ns.tw.precedingMessageContent]
                 data+=[tweet["retweeted_status"]["text"]]
 
                 P.rdf.link([tg],imsg,msg,uris,data)
@@ -148,7 +165,10 @@ def publishSearch(fname,fpath,aname=None,scriptpath=None,created_at=None,tweets_
             # fazer as uris corretamente para o user e o reply to
             # achar as hashtags e colocar jah
 
-        P.rdf.writeAll(tg,aname+"Translate{:05d}".format(ccount),fpath_,False,1)
+        P.rdf.writeAll(tg,aname+"Translate{:05d}".format(ccount),fpath_,False,False)
+        if not os.path.isdir(fpath_+"base"):
+            os.mkdir(fpath_+"base")
+        P.utils.pDump(tweets,fpath_+"base/"+"{}{:04d}.pickle".format(aname,ccount))
         ccount+=1
         nnicks+=P.utils.countMe( tg[0],"tw:author")
         nicks = P.utils.getAll2(  tg[0],"tw:author")
@@ -157,11 +177,15 @@ def publishSearch(fname,fpath,aname=None,scriptpath=None,created_at=None,tweets_
         nreplies += P.utils.countMe(tg[0],"tw:inReplyToUID")
         nretweets+=P.utils.countMe(  tg[0],"tw:retweetOf")
         nmsgs    +=    P.utils.countMe(  tg[0], "tw:messageContent")
-        dates=[i for i in tg_[0].query(r"SELECT ?p WHERE {?s tw:sentAt ?p} ORDER BY ASC(?p)")]
-        date1+=[dates[0][0].value]
-        date2+=[dates[-1][0].value]
-    date1=min(date1)
-    date2=max(date2)
+        dates=[i for i in tg[0].query(r"SELECT ?p WHERE {?s tw:sentAt ?p} ORDER BY ASC(?p)")]
+        dates1+=[dates[0][0].value]
+        dates2+=[dates[-1][0].value]
+        tweets=[]
+        if os.path.isfile(fname__):
+            tweets,fopen=P.utils.pRead3(None,tweets,fopen)
+
+    date1=min(dates1)
+    date2=max(dates2)
     c("tudo em RDF")
     #tg_=[tg[0]+tg2[0],tg[1]]
     #fpath_="{}/{}/".format(fpath,aname)
@@ -170,19 +194,18 @@ def publishSearch(fname,fpath,aname=None,scriptpath=None,created_at=None,tweets_
     if not os.path.isdir(fpath_+"scripts"):
         os.mkdir(fpath_+"scripts")
     shutil.copy(scriptpath,fpath_+"scripts/")
-    if not os.path.isdir(fpath_+"base"):
-        os.mkdir(fpath_+"base")
+
 #    shutil.copy(fname,fpath_+"base/")
-    i=0
-    for chunck in cc:
-        P.utils.pDump(fpath_+"base/"+"{}{:04d}".format(aname,i))
-        i+=1
+    #i=0
+    #for chunck in tweet_chuncks:
+    #    P.utils.pDump(chunck,fpath_+"base/"+"{}{:04d}.pickle".format(aname,i))
+    #    i+=1
     P.rdf.writeAll(tg2,aname+"Meta",fpath_,1)
 
     # faz um README
-    dates=[i for i in tg_[0].query(r"SELECT ?p WHERE {?s tw:sentAt ?p} ORDER BY ASC(?p)")]
-    date1=dates[0][0].value
-    date2=dates[-1][0].value
+    #dates=[i for i in tg_[0].query(r"SELECT ?p WHERE {?s tw:sentAt ?p} ORDER BY ASC(?p)")]
+    #date1=dates[0][0].value
+    #date2=dates[-1][0].value
     #return tg_
     #nicks=queryMe(tg_[0],"SELECT ?s ?o WHERE {?s irc:nick ?o}")
 
@@ -203,7 +226,7 @@ Original data from Twitter in data/\n
 \nUsers: {}\n""".format(
             tweets_info,created_at,date1,date2,
             nnicks,nmsgs,nreplies,nretweets,nicks_))
-    return tg_, tweets
+    return tg, tweets
 
 
 class Twitter:

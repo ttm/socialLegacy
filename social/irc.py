@@ -50,6 +50,254 @@ def utf8Fix(string):
         string=string.replace(st,co)
     return string
 
+def publishLog2(fdir,fpath,aname=None,scriptpath=None,created_at=None,channel_info="channel #labmarambira at Freenode",donated_by="labMacambira.sf.net",latin=False,utf8_fix=True):
+    if not aname:
+        name=aname=fdir.split("#")[-1]
+    if not created_at:
+        created_at=datetime.datetime.now()
+    tg=P.rdf.makeBasicGraph([["po","irc"],[P.rdf.ns.po,P.rdf.ns.irc]],"IRC log linked data")
+    tg2=P.rdf.makeBasicGraph([["po","irc"],[P.rdf.ns.po,P.rdf.ns.irc]],"RDF metadata IRC log")
+    ind=P.rdf.IC([tg2],P.rdf.ns.po.Snapshot,
+            aname,"Snapshot {}".format(aname))
+    P.rdf.link([tg2],ind,"Snapshot {}".format(aname),
+                          [P.rdf.ns.po.createdAt,
+                          P.rdf.ns.po.triplifiedIn,
+                          P.rdf.ns.po.donatedBy,
+                          P.rdf.ns.po.availableAt,
+                          P.rdf.ns.po.originalFile,
+                          P.rdf.ns.po.rdfFile,
+                          P.rdf.ns.po.ttlFile,
+                          P.rdf.ns.po.discoveryRDFFile,
+                          P.rdf.ns.po.discoveryTTLFile,
+                          P.rdf.ns.po.acquiredThrough,
+                          P.rdf.ns.rdfs.comment,
+                          ],
+                          [created_at,
+                           datetime.datetime.now(),
+                           donated_by,
+                           "https://github.com/ttm/{}".format(aname),
+                           "https://raw.githubusercontent.com/ttm/{}/master/base/{}".format(aname,fdir.split("#")[-1]),
+                           "https://raw.githubusercontent.com/ttm/{}/master/rdf/{}Translate.owl".format(aname,aname),
+                           "https://raw.githubusercontent.com/ttm/{}/master/rdf/{}Translate.ttl".format(aname,aname),
+                                "https://raw.githubusercontent.com/ttm/{}/master/rdf/{}Meta.owl".format(aname,aname),
+                                "https://raw.githubusercontent.com/ttm/{}/master/rdf/{}Meta.ttl".format(aname,aname),
+                           "Lalenia supybot",
+                                "The IRC log of {}".format(channel_info),
+                           ])
+
+#    with open(fname,"rb") as f:
+#        t_=f.read()
+#    if latin:
+#        t=t_.decode("latin-1")
+#    else:
+#        t=t_.decode("utf-8",errors="ignore")
+#    if utf8_fix:
+#        t=utf8Fix(t)
+    # get users, messages, times
+    # ver se estamos jogando algo fora TTM
+    count=1
+    timestamps=set()
+    mids=set()
+    #for match in re.findall(exp,t):
+
+    exp0=r"(\d{4})\-(\d{2})\-(\d{2})T(\d{2}):(\d{2}):(\d{2})  \*\*\* (\S+) (.*)"
+    # lista arquivos no dir
+    arqs=os.listdir(fdir)
+    # em cada arquivo, pega a data do nome, os horarios e as msgs do conteúdo
+    exp1=r"(\d{4})(\d{2})(\d{2})" # date
+    exp1_=r"(\d{4})(\d{2})" # date without day
+    ex=r"\[(\d{2}):(\d{2}):(\d{2})\] \<(.*?)\>[ ]*(.*)" # message
+    ex_=r"\[(\d{2}):(\d{2}):(\d{2})\] \* ([^ ?]*)[ ]*(.*)"
+    nicks=[]
+    for arq in arqs:
+        date=arq.split(".")[0]
+        if len(date)==8:
+            year,month,day=re.findall(exp1,date)[0]
+        elif len(date)==6:
+            year,month=re.findall(exp1_,date)[0]
+        else:
+            raise ValueError("date string from filename have a different format")
+        with open("{}/{}".format(fdir,arq),"r") as f:
+            content=f.read()#.decode("utf-8",errors="ignore")
+        results=re.findall(ex_,content)
+        nicks+=[Q(i[-2]) for i in results]
+        for match in re.findall(ex_,content):
+            hour,minute,second,nick,msg=match
+
+            nick=Q(nick)
+            nicks.append(nick)
+            ind=P.rdf.IC([tg],P.rdf.ns.irc.Participant,"{}-{}".format(aname,nick))
+            uris=[P.rdf.ns.irc.nick]
+            data=[nick]
+            P.rdf.link([tg],ind,nick,uris,data)
+
+            dt=datetime.datetime(*[int(i) for i in (year,month,day,hour,minute,second)])
+            timestamp=dt.isoformat()
+            while timestamp in timestamps:
+                timestamp+='_r_%05x' % random.randrange(16**5)
+            timestamps.update([timestamp])
+            imsg=P.rdf.IC([tg],P.rdf.ns.irc.Message,"{}-{}".format(aname,timestamp))
+            if msg:
+                uris=[P.rdf.ns.irc.messageContent]
+                data=[msg]
+            else:
+                uris=[P.rdf.ns.irc.empty]
+                data=[True]
+                msg="EMPTYMSG"
+            uris+=[P.rdf.ns.irc.sentAt,P.rdf.ns.irc.indirectMessage]
+            data+=[dt,True]
+            P.rdf.link([tg],imsg,msg,uris,data)
+            P.rdf.link_([tg],imsg,msg,[P.rdf.ns.irc.user],[ind])
+            if (1+count)%1000==0:
+                if Tbreak: break
+                c("indirect msgs check 1000")
+            count+=1
+
+
+#    exp=r"(\d{4})\-(\d{2})\-(\d{2})T(\d{2}):(\d{2}):(\d{2})  \<(.*?)\> (.*)"
+    NICKS=set(nicks)
+    for arq in arqs:
+        date=arq.split(".")[0]
+        if len(date)==8:
+            year,month,day=re.findall(exp1,date)[0]
+        elif len(date)==6:
+            year,month=re.findall(exp1_,date)[0]
+        else:
+            raise ValueError("date string from filename have a different format")
+        with open("{}/{}".format(fdir,arq),"r") as f:
+            content=f.read()#.decode("utf-8",errors="ignore")
+        results=re.findall(ex,content)
+        for match in results:
+            hour, minute, second, nick, msg=match
+
+            nick=Q(nick)
+            # achar direct message com virgula! TTM
+
+            toks=k.word_tokenize(msg)
+            toks=[i for i in toks if i not in set(string.punctuation)]
+            nicks2=[] # for directed messages at
+            nicks3=[] # for mentioned fellows
+            direct=1
+            for tok in toks:
+                if tok not in NICKS:
+                    direct=0
+                else:
+                    if direct:
+                        nicks2+=[tok]
+                    else:
+                        nicks3+=[tok]
+            if nicks2:
+                msg_=msg[msg.index(nicks2[-1])+len(nicks2[-1])+1:].lstrip()
+            # cria indivíduos: mensagem e usuarios para os nicks
+            ind=P.rdf.IC([tg],P.rdf.ns.irc.Participant,"{}-{}".format(aname,nick))
+            #if "discutir se a prioridade" in msg:
+            #    wer=asd
+            uris=[P.rdf.ns.irc.nick]
+            data=[nick]
+            P.rdf.link([tg],ind,nick,uris,data)
+            # usuario se conecta com o nick (strings)
+            #P.rdf.link([tg],ind,nick,uris,data)
+            inds2=[]
+            for nickfoo in nicks2:
+                nickfoo=Q(nickfoo)
+                ind2=P.rdf.IC([tg],P.rdf.ns.irc.Participant,"{}-{}".format(aname,nickfoo))
+                data =[nickfoo]
+                uris =[P.rdf.ns.irc.nick]
+                P.rdf.link([tg],ind2,nickfoo,uris,data)
+                inds2+=[ind2]
+            inds3=[]
+            for nickfoo in nicks3:
+                nickfoo=Q(nickfoo)
+                ind3=P.rdf.IC([tg],P.rdf.ns.irc.Participant,"{}-{}".format(aname,nickfoo))
+                inds3+=[ind3]
+
+            # mensagem se conecta com usuarios (URIS) e textos (strings)
+            dt=datetime.datetime(*[int(i) for i in (year,month,day,hour,minute,second)])
+            timestamp=dt.isoformat()
+            while timestamp in timestamps:
+                timestamp+='_r_%05x' % random.randrange(16**5)
+            timestamps.update([timestamp])
+            imsg=P.rdf.IC([tg],P.rdf.ns.irc.Message,"{}-{}".format(aname,timestamp))
+            if msg:
+                uris=[P.rdf.ns.irc.messageContent]
+                data=[msg]
+                if nicks2:
+                    uris+=[P.rdf.ns.irc.cleanedMessage]
+                    data+=[msg_]
+            else:
+                uris=[P.rdf.ns.irc.empty]
+                data=[True]
+                msg="EMPTYMSG"
+            uris+=[P.rdf.ns.irc.sentAt,P.rdf.ns.irc.systemMessage]
+            data+=[dt,False]
+            P.rdf.link([tg],imsg,msg,uris,data)
+                # adiciona tripla da msg para empty message true
+
+            uris=[P.rdf.ns.irc.author]
+            uris2=[ind]
+            for ind2 in inds2:
+                uris+=[P.rdf.ns.irc.directedTo]
+                uris2+=[ind2]
+            uris3=[]
+            for ind3 in inds3:
+                uris+=[P.rdf.ns.irc.mentions]
+                uris3+=[ind3]
+            uris23=uris2+uris3
+
+            P.rdf.link_([tg],imsg,msg,uris,uris23)
+
+            if (1+count)%1000==0:
+                if Tbreak: break
+                c("check 1000")
+            count+=1
+    c("tudo em RDF")
+    tg_=[tg[0]+tg2[0],tg[1]]
+    fpath_="{}/{}/".format(fpath,aname)
+#    return fpath_, tg_,exp,t,t_
+#    return tg_
+    P.rdf.writeAll(tg_,aname+"Translate",fpath_,False,1)
+    # copia o script que gera este codigo
+    if not os.path.isdir(fpath_+"scripts"):
+        os.mkdir(fpath_+"scripts")
+    #shutil.copy(this_dir+"/../tests/rdfMyFNetwork2.py",fpath+"scripts/")
+    shutil.copy(scriptpath,fpath_+"scripts/")
+    # copia do base data
+    if not os.path.isdir(fpath_+"base"):
+        os.mkdir(fpath_+"base")
+    shutil.copy(fname,fpath_+"base/")
+    P.rdf.writeAll(tg2,aname+"Meta",fpath_,1)
+    # faz um README
+    # make analysis from graph
+    dates=[i for i in tg_[0].query(r"SELECT ?p WHERE {?s irc:sentAt ?p} ORDER BY ASC(?p)")]
+    date1=dates[0][0].value
+    date2=dates[1][0].value
+    #return tg_
+    #nicks=queryMe(tg_[0],"SELECT ?s ?o WHERE {?s irc:nick ?o}")
+    nnicks=countMe(tg_[0],"irc:nick")
+    nicks=getAll(  tg_[0],"irc:nick")
+    eq=detectEquivalent(nicks)
+    ndnicks=len(nicks)-len(eq)
+
+    #nnicks=len(nicks)
+    ndirect=countMe(tg_[0],"irc:directedTo")
+    nmsgs=countMe(  tg_[0],"irc:messageContent")
+    ninds=countMe(  tg_[0],"irc:indirectMessage","true")
+    with open(fpath_+"README","w") as f:
+        f.write("""This repo delivers RDF data from the IRC Network {}
+        collected around {}, with messages from {} to {}.
+It has {} nicks (~{} different) with {} directed messages.
+Total messages count {}
+of which {} are indirect.
+The linked data is available at rdf/ dir and was
+generated by the routine in the script/ directory.
+Original data from lalenia (a Supybot) in data/\n
+\nNICKS: {}\n
+NICKS parecidos: {}""".format(
+            channel_info,created_at,date1,date2,
+            nnicks,ndnicks,ndirect,nmsgs,ninds,nicks,eq))
+    return tg_
+
+
 def publishLog(fname,fpath,aname=None,scriptpath=None,created_at=None,channel_info="channel #labmarambira at Freenode",donated_by="labMacambira.sf.net",latin=False,utf8_fix=True):
     if not aname:
         name=aname=fname.split(".")[0]

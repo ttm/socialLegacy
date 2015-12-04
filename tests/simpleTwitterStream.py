@@ -5,7 +5,6 @@ importlib.reload(P.utils)
 import maccess
 c=P.utils.check
 ttag,tid="#SyriaVote",1
-ttag,tid="#art",6
 ttag,tid="#porn",4
 ttag,tid="#ChennaiFloods",3
 ttag,tid="#QuartaSemRacismoClubeSDV",0
@@ -16,6 +15,7 @@ ttag,tid="#obama",5
 ttag,tid="#god",7
 ttag,tid="#game",3
 ttag,tid="#science",6
+ttag,tid="#dilma",6
 # deixar algumas tags com pouco fluxo puxando por dias
 # fuck physics shit brasil dilma europe africa etc.
 
