@@ -25,6 +25,7 @@ def triplifyGDF(dpath="../data/fb/",fname="foo.gdf",fnamei="foo_interaction.gdf"
     B.datetime_snapshot=datetime.datetime(*[int(i) for i in (year,month,day)])
     B.datetime_snapshot_=datetime_snapshot.isoformat().split("T")[0]
     B.fname=fname
+    B.fnamei=fnamei
     B.name=fname[:-4]
     B.ego=ego
     B.friendship=bool(fname)
@@ -70,10 +71,11 @@ def rdfInteractionNetwork(fnet):
         vals_=list(vals_)
         #name,label=[foo["vals"][i][icount] for i in ("name","label")]
         cid=vals_[iname]
+        anon_name=vals_[ilabel]
         foo_=foo["uris"][:]
         if anonymized:
-            name_="{}-{}-{}".format(B.name,B.groupid,B.datetime_snapshot_)
-            uid_names[cid]=name_
+            name_="{}-{}".format(B.name,anon_name)
+            uid_names[cid]=anon_name
             # remove name and label from vals_ and foo["uris"]
             vals_.pop(ilabel)
             vals_.pop(iname-1)
@@ -102,7 +104,7 @@ def rdfInteractionNetwork(fnet):
             uid2=uid_names[uid2]
             flabel="{}-{}".format(uid1,uid2)
         else:
-            flabel="{}-{}-{}-{}".format(fname,datetime_,uid1,uid2)
+            flabel="{}-{}-{}-{}".format(B.fname,B.datetime_snapshot_,uid1,uid2)
         ind=P.rdf.IC([tg],P.rdf.ns.fb.Interaction,flabel)
         uids=[r.URIRef(P.rdf.ns.fb.Participant+"#"+str(i)) for i in (uid1,uid2)]
         P.rdf.link_([tg],ind,None,[P.rdf.ns.fb.iFrom,P.rdf.ns.fb.iTo],
@@ -139,7 +141,7 @@ def rdfFriendshipNetwork(fnet):
             vals_=list(vals_)
             vals_[ilabel]=label
         name_label[name]=label
-        ind=P.rdf.IC([tg],P.rdf.ns.fb.Participant,name,label)
+        ind=P.rdf.IC([tg],P.rdf.ns.fb.Participant,name)
         P.rdf.link([tg],ind,label,foo["uris"],
                         vals_,draw=False)
         icount+=1
@@ -187,26 +189,32 @@ def makeMetadata(fnet,inet):
     if B.fb_link:
         foo["uris"].append(P.rdf.ns.fb.fbLink)
         foo["vals"].append(B.fb_link)
+    if B.friendship:
+        foo["uris"]+=[P.rdf.ns.po.friendshipXMLFile,
+                      P.rdf.ns.po.friendshipTTLFile]
+        foo["vals"]+=["https://raw.githubusercontent.com/OpenLinkedSocialData/{}/master/rdf/{}Friendship.owl".format(aname,aname),
+                      "https://raw.githubusercontent.com/OpenLinkedSocialData/{}/master/rdf/{}Friendship.ttl".format(aname,aname) ]
+    if B.interaction:
+        foo["uris"]+=[P.rdf.ns.po.interactionXMLFile,
+                      P.rdf.ns.po.interactionTTLFile,]
+        foo["vals"]+=["https://raw.githubusercontent.com/OpenLinkedSocialData/{}/master/rdf/{}Interaction.owl".format(aname,aname),
+                      "https://raw.githubusercontent.com/OpenLinkedSocialData/{}/master/rdf/{}Interaction.ttl".format(aname,aname),]
     P.rdf.link([tg2],ind,"Snapshot {}".format(aname),
                         [P.rdf.ns.po.createdAt,
                           P.rdf.ns.po.triplifiedIn,
                           P.rdf.ns.po.donatedBy,
                           P.rdf.ns.po.availableAt,
                           P.rdf.ns.po.originalFile,
-                          P.rdf.ns.po.rdfFile,
-                          P.rdf.ns.po.ttlFile,
                           P.rdf.ns.po.discorveryRDFFile,
                           P.rdf.ns.po.discoveryTTLFile,
                           P.rdf.ns.po.acquiredThrough,
                           P.rdf.ns.rdfs.comment,
                           ]+foo["uris"],
-                          [datetime_snapshot,
+                          [B.datetime_snapshot,
                            datetime.datetime.now(),
                            B.name,
                            "https://github.com/ttm/{}".format(aname),
                            "https://raw.githubusercontent.com/OpenLinkedSocialData/{}/master/base/{}".format(aname,B.fname),
-                           "https://raw.githubusercontent.com/OpenLinkedSocialData/{}/master/rdf/{}Translate.owl".format(aname,aname),
-                           "https://raw.githubusercontent.com/OpenLinkedSocialData/{}/master/rdf/{}Translate.ttl".format(aname,aname),
                            "https://raw.githubusercontent.com/OpenLinkedSocialData/{}/master/rdf/{}Meta.owl".format(aname,aname),
                            "https://raw.githubusercontent.com/OpenLinkedSocialData/{}/master/rdf/{}Meta.ttl".format(aname,aname),
                            "Netvizz",
@@ -216,7 +224,7 @@ def makeMetadata(fnet,inet):
     return tg2
 def writeAllFB(fnet,inet,mnet):
     aname=B.name+"_fb"
-    fpath_="{}{}/".format(B.fpath,B.name)
+    fpath_="{}{}/".format(B.fpath,aname)
     if B.friendship:
         P.rdf.writeAll(fnet,aname+"Friendship",fpath_,False,1)
     if B.interaction:
@@ -228,7 +236,8 @@ def writeAllFB(fnet,inet,mnet):
     # copia do base data
     if not os.path.isdir(fpath_+"base"):
         os.mkdir(fpath_+"base")
-    shutil.copy(B.dpath+fname,fpath_+"base/")
+    shutil.copy(B.dpath+B.fname,fpath_+"base/")
+    shutil.copy(B.dpath+B.fnamei,fpath_+"base/")
     P.rdf.writeAll(mnet,aname+"Meta",fpath_,1)
     # faz um README
     with open(fpath_+"README","w") as f:
