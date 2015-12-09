@@ -59,12 +59,15 @@ def rdfInteractionNetwork(fnet):
         anonymized=True
     else:
         anonymized=False
+    B.ianon=anonymized
     foo={"uris":[],"vals":[]}
     for tkey in tkeys:
         foo["uris"]+=[eval("P.rdf.ns.fb."+trans(tkey))]
         foo["vals"]+=[fnet["individuals"][tkey]]
     iname= tkeys.index("name")
     ilabel=tkeys.index("label")
+    B.nfriendsi=len(foo["vals"][0])
+    B.fvarsi=tkeys
     icount=0
     uid_names={}
     for vals_ in zip(*foo["vals"]):
@@ -92,7 +95,9 @@ def rdfInteractionNetwork(fnet):
                         vals_)
         icount+=1
 
-    interactions_=[fnet["relations"][i] for i in ("node1","node2","weight")]
+    B.ivars=("node1","node2","weight")
+    interactions_=[fnet["relations"][i] for i in B.ivars]
+    B.ninteractions=len(interactions_[0])
     c("escritos participantes")
     i=1
     for uid1,uid2,weight in zip(*interactions_):
@@ -119,6 +124,13 @@ def rdfInteractionNetwork(fnet):
 
 def rdfFriendshipNetwork(fnet):
     tg=P.rdf.makeBasicGraph([["po","fb"],[P.rdf.ns.per,P.rdf.ns.fb]],"Facebook friendship network from {} . Ego: {}".format(B.name,B.ego))
+    if sum([("user" in i) for i in fnet["individuals"]["label"]])==len(fnet["individuals"]["label"]):
+        # nomes falsos, ids espurios
+        anonymized=True
+    else:
+        anonymized=False
+    B.fanon=anonymized
+
     tkeys=list(fnet["individuals"].keys())
     foo={"uris":[],"vals":[]}
     for tkey in tkeys:
@@ -146,6 +158,7 @@ def rdfFriendshipNetwork(fnet):
                         vals_,draw=False)
         icount+=1
     B.nfriends=len(foo["vals"][0])
+    B.fvars=tkeys
 
     friendships_=[fnet["relations"][i] for i in ("node1","node2")]
     c("escritos participantes")
@@ -176,8 +189,6 @@ def makeMetadata(fnet,inet):
                 [B.groupid])
     # com e sem interaction no final
     datetime_snapshot_=datetime_snapshot.isoformat().split("T")[0]
-    tg=P.rdf.makeBasicGraph([["po","fb"],[P.rdf.ns.per,P.rdf.ns.fb]], ) # drop de agraph
-    tg2=P.rdf.makeBasicGraph([["po"],[P.rdf.ns.per]],     "Metadata for the "+desc) # drop de agraph
     ind=P.rdf.IC([tg2],P.rdf.ns.po.Snapshot,
             aname,"Snapshot {}".format(aname))
 
@@ -193,14 +204,39 @@ def makeMetadata(fnet,inet):
         foo["vals"].append(B.fb_link)
     if B.friendship:
         foo["uris"]+=[P.rdf.ns.po.friendshipXMLFile,
-                      P.rdf.ns.po.friendshipTTLFile]
-        foo["vals"]+=["https://raw.githubusercontent.com/OpenLinkedSocialData/{}/master/rdf/{}Friendship.owl".format(aname,aname),
-                      "https://raw.githubusercontent.com/OpenLinkedSocialData/{}/master/rdf/{}Friendship.ttl".format(aname,aname) ]
+                      P.rdf.ns.po.friendshipTTLFile]+\
+                    [ P.rdf.ns.fb.nFriends,
+                      P.rdf.ns.fb.nFriendships,
+                      P.rdf.ns.fb.fAnon ]+\
+                     [P.rdf.ns.fb.friendAttribute]*len(B.fvars)
+        B.frdf_file="https://raw.githubusercontent.com/OpenLinkedSocialData/{}/master/rdf/{}Friendship.owl".format(aname,aname)
+        foo["vals"]+=[B.frdf_file,
+                      "https://raw.githubusercontent.com/OpenLinkedSocialData/{}/master/rdf/{}Friendship.ttl".format(aname,aname) ]+\
+                     [B.nfriends,B.nfriendships,B.fanon]+list(B.fvars)
+
     if B.interaction:
         foo["uris"]+=[P.rdf.ns.po.interactionXMLFile,
-                      P.rdf.ns.po.interactionTTLFile,]
-        foo["vals"]+=["https://raw.githubusercontent.com/OpenLinkedSocialData/{}/master/rdf/{}Interaction.owl".format(aname,aname),
-                      "https://raw.githubusercontent.com/OpenLinkedSocialData/{}/master/rdf/{}Interaction.ttl".format(aname,aname),]
+                      P.rdf.ns.po.interactionTTLFile,]+\
+                    [ P.rdf.ns.fb.nFriendsInteracted,
+                      P.rdf.ns.fb.nInteractions,
+                      P.rdf.ns.fb.iAnon ]+\
+                    [ P.rdf.ns.fb.interactionFriendAttribute]*len(B.fvarsi)+\
+                    [ P.rdf.ns.fb.interactionAttribute]*len(B.ivars)
+
+        B.irdf_file="https://raw.githubusercontent.com/OpenLinkedSocialData/{}/master/rdf/{}Interaction.owl".format(aname,aname)
+        foo["vals"]+=[B.irdf_file,
+                      "https://raw.githubusercontent.com/OpenLinkedSocialData/{}/master/rdf/{}Interaction.ttl".format(aname,aname),]+\
+                     [B.nfriendsi,B.ninteractions,B.ianon]+list(B.fvarsi)+list(B.ivars)
+
+    foo["uris"]+=[
+                  P.rdf.ns.fb.ego,
+                  P.rdf.ns.fb.friendship,
+                  P.rdf.ns.fb.interaction,
+                  ]
+    foo["vals"]+=[B.ego,B.friendship,B.interaction]
+
+    B.mrdf_file="https://raw.githubusercontent.com/OpenLinkedSocialData/{}/master/rdf/{}Meta.owl".format(aname,aname)
+    B.ofile="https://raw.githubusercontent.com/OpenLinkedSocialData/{}/master/base/{}".format(aname,B.fname)
     P.rdf.link([tg2],ind,"Snapshot {}".format(aname),
                         [P.rdf.ns.po.createdAt,
                           P.rdf.ns.po.triplifiedIn,
@@ -216,8 +252,8 @@ def makeMetadata(fnet,inet):
                            datetime.datetime.now(),
                            B.name,
                            "https://github.com/ttm/{}".format(aname),
-                           "https://raw.githubusercontent.com/OpenLinkedSocialData/{}/master/base/{}".format(aname,B.fname),
-                           "https://raw.githubusercontent.com/OpenLinkedSocialData/{}/master/rdf/{}Meta.owl".format(aname,aname),
+                           B.ofile,
+                           B.mrdf_file,
                            "https://raw.githubusercontent.com/OpenLinkedSocialData/{}/master/rdf/{}Meta.ttl".format(aname,aname),
                            "Netvizz",
                                 desc,
@@ -246,20 +282,30 @@ def writeAllFB(fnet,inet,mnet):
         f.write("""This repo delivers RDF data from the facebook
 friendship network of {} collected around {}.
 {} individuals with metadata {}
-and {} friendships constitute the friendship network in file {} (anonymized: {}).
+and {} friendships constitute the friendship network in file:
+{}
+(anonymized: {}).
 {} individuals with metadata {}
 and {} interactions with metadata {} constitute the interaction 
-network in file {} (anonymized: {}).
-Metadata for discovery is in file {}.
-Ego network: {}\n""".format(
+network in file:
+{}
+(anonymized: {}).
+Metadata for discovery is in file:
+{}.
+Original file:
+{}.
+Ego network: {}
+Friendship network: {}
+Interaction network: {}
+\n""".format(
             B.name,B.datetime_snapshot_,
             B.nfriends,str(B.fvars),
-                    B.nfriendships, B.frdf_file
-                    B.nfriendsi,str(B.fvarsi),
+                    B.nfriendships, B.frdf_file,
                     B.fanon,
+                    B.nfriendsi,str(B.fvarsi),
                     B.ninteractions,str(B.ivars),B.irdf_file,
                     B.ianon,
-                    B.mrdf_file,
-                    B.ego
+                    B.mrdf_file,B.ofile,
+                    B.ego, B.friendship,B.interaction
                     ))
 
