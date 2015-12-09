@@ -26,3 +26,7 @@ path="./publishing/fb2/{}_fb/rdf/".format(fnames[0].split(".")[0])
 P.utils.testRdfs(path,eurl)
 # write to the info, meta or discovery graph about the graphs created
 # access this point to retrieve info from other graphs
+# in percolation/tests/makeBasicStructs2.py
+
+
+
