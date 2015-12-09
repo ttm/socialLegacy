@@ -17,6 +17,7 @@ ttag,tid="#science",6
 ttag,tid="#dilma",6
 ttag,tid="#ForaCunha",8
 ttag,tid="#god",7
+ttag,tid="#ForaDilma",3
 # deixar algumas tags com pouco fluxo puxando por dias
 # fuck physics shit brasil dilma europe africa etc.
 

@@ -2,6 +2,7 @@ import social as S, percolation as P, os, re
 import  importlib
 importlib.reload(S.fb)
 importlib.reload(P.rdf)
+importlib.reload(P.utils)
 c=P.utils.check
 #fnames=("../data/Antonio.gdf",thata,ricardo,marilia,debora,rita,massimo,vilson,penalva,grupos)
 #fnames="RenatoFabbri06022014.gdf","AntonioAnzoategui18022013huge_100003608428288_2013_02_18_21_34_f74ca978ec921548c0b7caf3287f2335.gml","RonaldCosta12062013.gml"
@@ -42,9 +43,9 @@ fnames3=[
 # para achar o id numerico, visito a página e procuro
 # pela tag 5h60. O profile_owner tem o id correto.
 # jah o id string nao consegui achar no caso da rita
-#fnames_=fnames+fnames2
+fnames_=fnames+fnames2+fnames3
 #fnames_=fnames2[7:-1]
-fnames_=fnames3[1:][::-1]
+#fnames_=fnames3[1:][::-1]
 # achar as redes de interacoes, publicar todo mundo
 # aos pares
 
@@ -52,7 +53,7 @@ tdir="../data/fb/{}/"
 fpath="./publishing/fb2/"
 scriptpath=os.path.realpath(__file__)
 # idealmente todos os arquivos gdf e gml no data/fb/
-for dataset in fnames_:
+for dataset in fnames_[:1]:
     fname=dataset[0]
     c(fname)
     if fname[-3:]=="gdf":
@@ -77,4 +78,7 @@ for dataset in fnames_:
         S.fb.triplifyGML(fname_,fpath,scriptpath,uid,sid)
     else:
         c("file format not recognized")
-
+eurl="http://200.144.255.210:8082/dsfoo"
+path="./publishing/fb2/AdornoNaoEhEnfeite_fb/rdf/"
+eurl="http://200.144.255.210:8082/dsfoo"
+path2="./publishing/fb2/AdornoNaoEhEnfeite_interacoes_fb/rdf/"

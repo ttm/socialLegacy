@@ -1,4 +1,4 @@
-import time, os, pickle, shutil, datetime, re, random, string
+import time, os, pickle, shutil, datetime, re, random, string, codecs
 #import networkx as x
 import nltk as k
 import rdflib as r
@@ -50,7 +50,7 @@ def utf8Fix(string):
         string=string.replace(st,co)
     return string
 
-def publishLog2(fdir,fpath,aname=None,scriptpath=None,created_at=None,channel_info="channel #labmarambira at Freenode",donated_by="labMacambira.sf.net",latin=False,utf8_fix=True):
+def publishLog2(fdir,fpath,aname=None,scriptpath=None,created_at=None,channel_info="channel #labmarambira at Freenode",donated_by="labMacambira.sf.net",latin=False,utf8_fix=True,c8859=True):
     if not aname:
         name=aname=fdir.split("#")[-1]
     if not created_at:
@@ -117,8 +117,12 @@ def publishLog2(fdir,fpath,aname=None,scriptpath=None,created_at=None,channel_in
             year,month=re.findall(exp1_,date)[0]
         else:
             raise ValueError("date string from filename have a different format")
-        with open("{}/{}".format(fdir,arq),"r") as f:
-            content=f.read()#.decode("utf-8",errors="ignore")
+        if not c8859:
+            with open("{}/{}".format(fdir,arq),"r") as f:
+                content=f.read()#.decode("utf-8",errors="ignore")
+        else:
+            with codecs.open("{}/{}".format(fdir,arq),"r",'iso-8859-1') as f:
+                content=f.read()
         results=re.findall(ex_,content)
         nicks+=[Q(i[-2]) for i in results]
         for match in re.findall(ex_,content):
