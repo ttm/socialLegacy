@@ -10,6 +10,7 @@ fnames=[ ("AdornoNaoEhEnfeite29032013.gdf",
 "https://www.facebook.com/groups/265217103529531/permalink/525654127485826/") ][0]
 dpath="../data/fb/gdf/"
 fpath="./publishing/fb2/"
+umbrella_dir="fbGroups/"
 scriptpath=os.path.realpath(__file__)
 S.fb.triplifyGDF(dpath=dpath,
                  fname=fnames[0],
@@ -19,10 +20,10 @@ S.fb.triplifyGDF(dpath=dpath,
                  uid=fnames[2],
                  sid=fnames[3],
                  fb_link=fnames[4],
-                 ego=False)
-eurl="http://200.144.255.210:8082/dsfoo"
-path="./publishing/fb2/{}_fb/rdf/".format(fnames[0].split(".")[0])
-
+                 ego=False,
+                 umbrella_dir=umbrella_dir)
+#eurl="http://200.144.255.210:8082/dsfoo"
+#path="./publishing/fb2/{}_fb/rdf/".format(fnames[0].split(".")[0])
 #P.utils.testRdfs(path,eurl)
 # write to the info, meta or discovery graph about the graphs created
 # access this point to retrieve info from other graphs
