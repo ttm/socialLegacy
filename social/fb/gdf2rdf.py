@@ -18,18 +18,18 @@ def triplifyGDF(dpath="../data/fb/",fname="foo.gdf",fnamei="foo_interaction.gdf"
     OUTPUTS:
     =======
     the tree in the directory fpath."""
-    # processa nome, sai com aname e o datetime_snapshot
-    day,month,year=re.findall(r".*(\d\d)(\d\d)(\d\d\d\d).gdf",fname)[0]
-    datetime_snapshot=datetime.datetime(*[int(i) for i in (year,month,day)])
-    datetime_snapshot_=datetime_snapshot.isoformat().split("T")[0]
-    name=fname[:-4]
 
-    fnet=S.fb.readGDF(dpath+fname)
-    fnet_=rdfFriendshipNetwork(fnet)
-    inet=S.fb.readGDF(dpath+fnamei)
-    inet_=rdfInteractionGDF(inet)
-    meta=makeMetadata(fnet_,inet_)
-    writeAll(fnet,inet,meta)
+    day,month,year=re.findall(r".*(\d\d)(\d\d)(\d\d\d\d).gdf",fname)[0]
+    B.datetime_snapshot=datetime.datetime(*[int(i) for i in (year,month,day)])
+    B.datetime_snapshot_=datetime_snapshot.isoformat().split("T")[0]
+    B.name=fname[:-4]
+
+    fnet=S.fb.readGDF(dpath+fname)     # return networkx graph
+    fnet_=rdfFriendshipNetwork(fnet)   # return rdflib graph
+    inet=S.fb.readGDF(dpath+fnamei)    # return networkx graph
+    inet_=rdfInteractionGDF(inet)      # return rdflib graph
+    meta=makeMetadata(fnet_,inet_)     # return rdflib graph with metadata about the structure
+    writeAll(fnet_,inet_,meta_,fpath)  # write linked data tree
 
 def trans(tkey):
     if tkey=="name":
@@ -142,8 +142,8 @@ def rdfFriendshipNetwork(fnet):
     c("escritas amizades")
     return tg
 
-def makeMetadata(fnet,inet,groupid,datetime_snapshot):
-    P.rdf.link([tg2],ind,"Snapshot {}".format(aname),
+def makeMetadata(fnet,inet):
+    P.rdf.link([tg2],ind,"Snapshot {}".format(B.name),
                 [P.rdf.ns.po.groupId,],
                 [groupid])
     fname_=fname.split(".")[0]
