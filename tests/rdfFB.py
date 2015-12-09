@@ -1,14 +1,13 @@
-import social as S
+import social as S, percolation as P, os
 import  importlib
 importlib.reload(S.fb)
+importlib.reload(S.fb.gdf2rdf)
 c=P.utils.check
 fnames=[ ("AdornoNaoEhEnfeite29032013.gdf",
 "AdornoNaoEhEnfeite29032013_interacoes.gdf",
 "265217103529531",
 0,
-"https://www.facebook.com/groups/265217103529531/permalink/525654127485826/") ]
-for dataset in fnames_[:1]:
-    S.fb.triplifyGDF()
+"https://www.facebook.com/groups/265217103529531/permalink/525654127485826/") ][0]
 dpath="../data/fb/gdf/"
 fpath="./publishing/fb2/"
 scriptpath=os.path.realpath(__file__)
