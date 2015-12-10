@@ -1,6 +1,9 @@
 import networkx as x
-def readGML(fname):
-    return x.read_gml(fname)
+def readGML(filename="../data/RenatoFabbri06022014.gml"):
+    gg=x.read_gml(filename)
+    nodes=gg.nodes(data=True)
+    edges=gg.edges(data=True)
+    return gg
 def readGDF(filename="../data/RenatoFabbri06022014.gdf"):
     """Made to work with gdf files from my own network and friends and groups"""
     with open(filename,"r") as f:

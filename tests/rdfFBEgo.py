@@ -3,7 +3,6 @@ import  importlib
 importlib.reload(P.rdf)
 importlib.reload(S.fb)
 importlib.reload(S.fb.gdf2rdf)
-importlib.reload(S.fb.gdf2rdf)
 c=P.utils.check
 umbrella_dir="fbEgo/"
 fpath="./publishing/fb3/"
@@ -48,15 +47,15 @@ fnames_=[
 ("CristinaMekitarian23022014.gdf",None,"1771691370","cristina.mekitarian"),
 ("MarcelaLucatelli25022014.gdf",  None,"520656478","justinamoira"),
 ("PedroRocha25022014.gdf",None,"836944624","dpedropaulorocha"),
+("JoaoMeirelles25022014.gdf",     None,"1194439813","joao.meirelles.10"),
+("LucasOliveira26022014.gdf",     None,"1060987164",0),
 ]
-#("JoaoMeirelles25022014.gdf",     None,0,0),
-#("LucasOliveira26022014.gdf",     None,0,0),
 #("FideoFuturalista22022014.gdf",  None,0,0),
 dpath="../data/fb/gdf/avlab/"
 ff+=[(fnames_,dpath)]
 
-for fnames_,dpath in ff:
-    for fnames in fnames_:
+for fnames_,dpath in ff[-1:]:
+    for fnames in fnames_[-2:]:
         S.fb.triplifyGDF(dpath=dpath,
                          fname=fnames[0],
                          fnamei=None,
