@@ -29,10 +29,11 @@ def triplifyGDF(dpath="../data/fb/",fname="foo.gdf",fnamei="foo_interaction.gdf"
     B.fname=fname
     B.fnamei=fnamei
     B.name=fname[:-4]
-    B.namei=fnamei[:-4]
+    if fnamei:
+        B.namei=fnamei[:-4]
     B.ego=ego
     B.friendship=bool(fname)
-    B.interaction=bool(fname)
+    B.interaction=bool(fnamei)
     B.sid=sid
     B.uid=uid
     B.scriptpath=scriptpath
@@ -44,8 +45,11 @@ def triplifyGDF(dpath="../data/fb/",fname="foo.gdf",fnamei="foo_interaction.gdf"
 
     fnet=S.fb.readGDF(dpath+fname)     # return networkx graph
     fnet_=rdfFriendshipNetwork(fnet)   # return rdflib graph
-    inet=S.fb.readGDF(dpath+fnamei)    # return networkx graph
-    inet_=rdfInteractionNetwork(inet)      # return rdflib graph
+    if B.interaction:
+        inet=S.fb.readGDF(dpath+fnamei)    # return networkx graph
+        inet_=rdfInteractionNetwork(inet)      # return rdflib graph
+    else:
+        inet_=0
     meta=makeMetadata(fnet_,inet_)     # return rdflib graph with metadata about the structure
     writeAllFB(fnet_,inet_,meta)  # write linked data tree
 
@@ -335,7 +339,21 @@ def writeAllFB(fnet,inet,mnet):
     if not os.path.isdir(fpath_+"base"):
         os.mkdir(fpath_+"base")
     shutil.copy(B.dpath+B.fname,fpath_+"base/")
-    shutil.copy(B.dpath+B.fnamei,fpath_+"base/")
+    if B.interaction:
+        shutil.copy(B.dpath+B.fnamei,fpath_+"base/")
+        tinteraction="""\n{} individuals with metadata {}
+and {} interactions with metadata {} constitute the interaction 
+network in file:
+{}
+(anonymized: {}).""".format( B.nfriendsi,str(B.fvarsi),
+                    B.ninteractions,str(B.ivars),B.irdf_file,
+                    B.ianon)
+        originals="{}\n{}".format(B.ffile,B.ifile)
+    else:
+        tinteraction=""
+        originals=B.ffile
+
+
     P.rdf.writeAll(mnet,aname+"Meta",fpath_,1)
     # faz um README
     with open(fpath_+"README","w") as f:
@@ -344,16 +362,10 @@ friendship network of {} collected around {}.
 {} individuals with metadata {}
 and {} friendships constitute the friendship network in file:
 {}
-(anonymized: {}).
-{} individuals with metadata {}
-and {} interactions with metadata {} constitute the interaction 
-network in file:
-{}
-(anonymized: {}).
+(anonymized: {}).{}
 Metadata for discovery is in file:
 {}
 Original files:
-{}
 {}
 Ego network: {}
 Friendship network: {}
@@ -365,10 +377,8 @@ All files should be available at the git repository:
             B.nfriends,str(B.fvars),
                     B.nfriendships, B.frdf_file,
                     B.fanon,
-                    B.nfriendsi,str(B.fvarsi),
-                    B.ninteractions,str(B.ivars),B.irdf_file,
-                    B.ianon,
-                    B.mrdf_file,B.ffile,B.ifile,
+                    tinteraction,
+                    B.mrdf_file,originals,
                     B.ego, B.friendship,B.interaction,B.available_dir
                     ))
 
