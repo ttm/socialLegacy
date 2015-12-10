@@ -23,7 +23,13 @@ fnames_=[("AdornoNaoEhEnfeite29032013.gdf","AdornoNaoEhEnfeite29032013_interacoe
 ("PracaPopular16032013.gdf","PracaPopular16032013_interactions.gdf","215924991863921",0,"https://www.facebook.com/groups/215924991863921/permalink/319279541528465/"),
 ("SolidarityEconomy12042013.gdf","SolidarityEconomy12042013_interactions.gdf","9149038282",0,"https://www.facebook.com/groups/9149038282/permalink/10151461945623283/"),
 ("StudyGroupSNA05042013.gdf","StudyGroupSNA05042013_interactions.gdf","140630009439814",0,"https://www.facebook.com/groups/140630009439814/permalink/151470598355755/"),
-("THackDay26032013.gdf","THackDay26032013_interacoes.gdf",0,"thackday",0)]
+("THackDay26032013.gdf","THackDay26032013_interacoes.gdf",0,"thackday",0),
+("SiliconValleyGlobalNetwork27042013.gdf","SiliconValleyGlobalNetwork27042013_interactions.gdf","109971182359978",0,"https://www.facebook.com/groups/109971182359978/permalink/589326757757749/"),
+("DemocraciaDiretaJa14072013.gdf","DemocraciaDiretaJa14072013_interacoes.gdf",0,"ddjbrasil","https://www.facebook.com/groups/ddjbrasil/permalink/347023325397298/"),
+("Tecnoxamanismo08032014.gdf","Tecnoxamanismo08032014_interactions.gdf","505090906188661",0,["https://www.facebook.com/groups/505090906188661/permalink/733144993383250/","https://www.facebook.com/groups/505090906188661/permalink/733157380048678/"]),
+("Tecnoxamanismo15032014.gdf","Tecnoxamanismo15032014_interactions.gdf","505090906188661",0,["https://www.facebook.com/groups/505090906188661/permalink/733144993383250/","https://www.facebook.com/groups/505090906188661/permalink/733157380048678/"]),
+("Latesfip08032014.gdf","Latesfip08032014_interactions.gdf","183557128478424",0,"https://www.facebook.com/groups/183557128478424/permalink/266610616839741/"),
+]
 
 
 
@@ -31,7 +37,7 @@ dpath="../data/fb/gdf/"
 fpath="./publishing/fb2/"
 umbrella_dir="fbGroups/"
 scriptpath=os.path.realpath(__file__)
-for fnames in fnames_:
+for fnames in fnames_[-1:]:
     S.fb.triplifyGDF(dpath=dpath,
                      fname=fnames[0],
                      fnamei=fnames[1],
