@@ -95,9 +95,13 @@ def rdfInteractionNetwork(fnet):
             vals_=[el for i,el in enumerate(vals_) if i not in (ilabel,iname)]
             foo_= [el for i,el in enumerate(foo_) if i not  in (ilabel,iname)]
         elif not vals_[ilabel]:
-            name_="po:noname-{}-{}-{}".format(cid,B.groupid,B.datetime_snapshot)
-            vals_=list(vals_)
-            vals_[ilabel]=name_
+            vals_=[el for i,el in enumerate(vals_) if i not in (ilabel,)]
+            foo_= [el for i,el in enumerate(foo_) if i not  in (ilabel,)]
+            name_=cid
+            #name_="po:noname-{}-{}-{}".format(cid,B.groupuid,B.datetime_snapshot)
+            #c("{} --- {}".format(name_, vals_[ilabel]))
+            #vals_=list(vals_)
+            #vals_[ilabel]=name_
         else:
             name_,label=[foo["vals"][i][icount] for i in (iname,ilabel)]
         ind=P.rdf.IC([tg],P.rdf.ns.fb.Participant,name_)
@@ -151,27 +155,39 @@ def rdfFriendshipNetwork(fnet):
         B.groupuid=fnet["individuals"]["groupid"][0]
         tkeys.remove("groupid")
     else:
-        B.groupid=None
+        B.groupuid=None
     iname= tkeys.index("name")
     ilabel=tkeys.index("label")
+    isex=tkeys.index("label")
+    ilocale=tkeys.index("locale")
     icount=0
     B.uid_names={}
     for vals_ in zip(*foo["vals"]):
         vals_=list(vals_)
         cid=vals_[iname]
         foo_=foo["uris"][:]
+        take=0
         if anonymized:
             anon_name=vals_[ilabel]
             name_="{}-{}".format(B.name,anon_name)
             B.uid_names[cid]=name_
             vals_=[el for i,el in enumerate(vals_) if i not in (ilabel,iname)]
             foo_= [el for i,el in enumerate(foo_) if i not  in (ilabel,iname)]
+            take+=2
         elif not vals_[ilabel]:
-            name_="po:noname-{}-{}-{}".format(cid,B.groupid,B.datetime_snapshot)
-            vals_=list(vals_)
-            vals_[ilabel]=name_
+            vals_=[el for i,el in enumerate(vals_) if i not in (ilabel,)]
+            foo_= [el for i,el in enumerate(foo_) if i not  in (ilabel,)]
+            name_=cid
+            take+=1
         else:
             name_,label=[foo["vals"][i][icount] for i in (iname,ilabel)]
+        if not vals_[isex-take]:
+            vals_=[el for i,el in enumerate(vals_) if i not in (isex-take,)]
+            foo_= [el for i,el in enumerate(foo_) if i not  in (isex-take,)]
+            take+=1
+        if not vals_[ilocale-take]:
+            vals_=[el for i,el in enumerate(vals_) if i not in (ilocale-take,)]
+            foo_= [el for i,el in enumerate(foo_) if i not  in (ilocale-take,)]
         ind=P.rdf.IC([tg],P.rdf.ns.fb.Participant,name_)
         P.rdf.link([tg],ind,None,foo_,
                         vals_)

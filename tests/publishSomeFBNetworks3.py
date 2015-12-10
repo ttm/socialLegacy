@@ -15,11 +15,11 @@ fnames=[
     ("AtivistasDaInclusaoDigital.gdf","423602557691243",0,"https://www.facebook.com/groups/423602557691243/permalink/525201037531394/"), #ok
     ("ComputerArt10032013.gdf",0,"computerart","https://www.facebook.com/groups/computerart/permalink/259389137529870/"), #ok
     ("CoolmeiaAmizades06032013.gdf", 0,"coolmeia","https://www.facebook.com/groups/coolmeia/permalink/489757754464962/"), #ok
-    ("Economia14042013.gdf",0,"economa1","https://www.facebook.com/groups/economa1/permalink/586007714743535/"),
+    ("Economia14042013.gdf",0,"economa1","https://www.facebook.com/groups/economa1/permalink/586007714743535/"), #ok
     ("PartidoPirata23032013.gdf",0,"partidopiratabrasil","https://www.facebook.com/groups/partidopiratabrasil/permalink/10151409024509317/"), #ok
-    ("DemocraciaDiretaJa14032013.gdf",0,"ddjbrasil","https://www.facebook.com/groups/ddjbrasil/permalink/347023325397298/"),
-    ("EconomiaCriativaDigital03032013.gdf",0,"economiacriativadigital","https://www.facebook.com/groups/economiacriativadigital/permalink/438313682916103/"),
-    ("PoliticasCulturasBrasileiras08032013.gdf",0,"pcult","https://www.facebook.com/groups/pcult/permalink/519626544747423/"),
+    ("DemocraciaDiretaJa14032013.gdf",0,"ddjbrasil","https://www.facebook.com/groups/ddjbrasil/permalink/347023325397298/"), #ok
+    ("EconomiaCriativaDigital03032013.gdf",0,"economiacriativadigital","https://www.facebook.com/groups/economiacriativadigital/permalink/438313682916103/"), #ok
+    ("PoliticasCulturasBrasileiras08032013.gdf",0,"pcult","https://www.facebook.com/groups/pcult/permalink/519626544747423/"), #ok
     ]
 #fnames2=[("DanielPenalva18022013.gml","100006319395678","barthor.la.zule"),
 #        ("CalebLuporini19022013.gml","1110305437","calebml"),
