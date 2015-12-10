@@ -3,11 +3,8 @@ import  importlib
 importlib.reload(S.fb)
 importlib.reload(S.fb.gdf2rdf)
 c=P.utils.check
-fnames=[ ("AdornoNaoEhEnfeite29032013.gdf",
-"AdornoNaoEhEnfeite29032013_interacoes.gdf",
-"265217103529531",
-0,
-"https://www.facebook.com/groups/265217103529531/permalink/525654127485826/") ][0]
+#fnames=("AdornoNaoEhEnfeite29032013.gdf","AdornoNaoEhEnfeite29032013_interacoes.gdf","265217103529531",0,"https://www.facebook.com/groups/265217103529531/permalink/525654127485826/")
+fnames=    ("PartidoPirata23032013.gdf","PartidoPirata23032013_interactions.gdf",0,"partidopiratabrasil","https://www.facebook.com/groups/partidopiratabrasil/permalink/10151409024509317/")
 dpath="../data/fb/gdf/"
 fpath="./publishing/fb2/"
 umbrella_dir="fbGroups/"

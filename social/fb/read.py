@@ -20,7 +20,8 @@ def readGDF(filename="../data/RenatoFabbri06022014.gdf"):
         fields=line.split(",")
         if "column_names2" not in locals():
             for i, field in enumerate(fields):
-                if field.isdigit(): field=int(field)
+                if column_names[i].endswith("id"): pass
+                elif field.isdigit(): field=int(field)
                 data_friends[column_names[i]].append(field)
         else:
             for i, field in enumerate(fields):
