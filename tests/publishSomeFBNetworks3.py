@@ -9,14 +9,14 @@ c=P.utils.check
 
 #    "LeiCulturaViva50.gdf", acho que é página
 fnames=[
-    ("AdornoNaoEhEnfeite.gdf","265217103529531",0,"https://www.facebook.com/groups/265217103529531/permalink/525654127485826/"),
-    ("DemocraciaPura06042013.gdf",0,"democraciapura","https://www.facebook.com/groups/democraciapura/permalink/310907215704321/"),
-    ("RedeTranzmidias.gdf","318333384951196",0,"https://www.facebook.com/groups/318333384951196/permalink/346658712118663/"),
-    ("AtivistasDaInclusaoDigital.gdf","423602557691243",0,"https://www.facebook.com/groups/423602557691243/permalink/525201037531394/"),
-    ("ComputerArt10032013.gdf",0,"computerart","https://www.facebook.com/groups/computerart/permalink/259389137529870/"),
-    ("CoolmeiaAmizades06032013.gdf", 0,"coolmeia","https://www.facebook.com/groups/coolmeia/permalink/489757754464962/"),
+    ("AdornoNaoEhEnfeite.gdf","265217103529531",0,"https://www.facebook.com/groups/265217103529531/permalink/525654127485826/"), #ok
+    ("DemocraciaPura06042013.gdf",0,"democraciapura","https://www.facebook.com/groups/democraciapura/permalink/310907215704321/"), #ok
+    ("RedeTranzmidias.gdf","318333384951196",0,"https://www.facebook.com/groups/318333384951196/permalink/346658712118663/"), #ok
+    ("AtivistasDaInclusaoDigital.gdf","423602557691243",0,"https://www.facebook.com/groups/423602557691243/permalink/525201037531394/"), #ok
+    ("ComputerArt10032013.gdf",0,"computerart","https://www.facebook.com/groups/computerart/permalink/259389137529870/"), #ok
+    ("CoolmeiaAmizades06032013.gdf", 0,"coolmeia","https://www.facebook.com/groups/coolmeia/permalink/489757754464962/"), #ok
     ("Economia14042013.gdf",0,"economa1","https://www.facebook.com/groups/economa1/permalink/586007714743535/"),
-    ("PartidoPirata23032013.gdf",0,"partidopiratabrasil","https://www.facebook.com/groups/partidopiratabrasil/permalink/10151409024509317/"),
+    ("PartidoPirata23032013.gdf",0,"partidopiratabrasil","https://www.facebook.com/groups/partidopiratabrasil/permalink/10151409024509317/"), #ok
     ("DemocraciaDiretaJa14032013.gdf",0,"ddjbrasil","https://www.facebook.com/groups/ddjbrasil/permalink/347023325397298/"),
     ("EconomiaCriativaDigital03032013.gdf",0,"economiacriativadigital","https://www.facebook.com/groups/economiacriativadigital/permalink/438313682916103/"),
     ("PoliticasCulturasBrasileiras08032013.gdf",0,"pcult","https://www.facebook.com/groups/pcult/permalink/519626544747423/"),

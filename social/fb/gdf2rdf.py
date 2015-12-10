@@ -29,6 +29,7 @@ def triplifyGDF(dpath="../data/fb/",fname="foo.gdf",fnamei="foo_interaction.gdf"
     B.fname=fname
     B.fnamei=fnamei
     B.name=fname[:-4]
+    B.namei=fnamei[:-4]
     B.ego=ego
     B.friendship=bool(fname)
     B.interaction=bool(fname)
@@ -71,27 +72,29 @@ def rdfInteractionNetwork(fnet):
     iname= tkeys.index("name")
     ilabel=tkeys.index("label")
     B.nfriendsi=len(foo["vals"][0])
-    B.fvarsi=[trans(i) for i in tkeys]
+    if anonymized:
+        B.fvarsi=[trans(i) for j,i in enumerate(tkeys) if j not in (ilabel,iname)]
+    else:
+        B.fvarsi=[trans(i) for i in tkeys]
     icount=0
-    uid_names={}
+    #uid_names={}
     for vals_ in zip(*foo["vals"]):
         vals_=list(vals_)
-        #name,label=[foo["vals"][i][icount] for i in ("name","label")]
         cid=vals_[iname]
-        anon_name=vals_[ilabel]
         foo_=foo["uris"][:]
         if anonymized:
-            name_="{}-{}".format(B.name,anon_name)
-            uid_names[cid]=name_
-            # remove name and label from vals_ and foo["uris"]
-            remove=ilabel,iname
-            vals_=[el for i,el in enumerate(vals_) if i not in remove]
-            foo_=[el for i,el in enumerate(foo_) if i not in remove]
-#            vals_.pop(ilabel)
-#            vals_.pop(iname)
-#            foo_.pop(ilabel)
-#            foo_.pop(iname)
-        elif not label:
+            if cid in B.uid_names.keys():
+                name_=B.uid_names[cid]
+            else:
+                anon_name=vals_[ilabel]
+                name_="{}-{}".format(B.namei,anon_name)
+                B.uid_names[cid]=name_
+            #anon_name=vals_[ilabel]
+            #name_="{}-{}".format(B.name,anon_name)
+            #uid_names[cid]=name_
+            vals_=[el for i,el in enumerate(vals_) if i not in (ilabel,iname)]
+            foo_= [el for i,el in enumerate(foo_) if i not  in (ilabel,iname)]
+        elif not vals_[ilabel]:
             name_="po:noname-{}-{}-{}".format(cid,B.groupid,B.datetime_snapshot)
             vals_=list(vals_)
             vals_[ilabel]=name_
@@ -152,29 +155,42 @@ def rdfFriendshipNetwork(fnet):
     iname= tkeys.index("name")
     ilabel=tkeys.index("label")
     icount=0
-    name_label={}
+    B.uid_names={}
     for vals_ in zip(*foo["vals"]):
-        name,label=[foo["vals"][i][icount] for i in (iname,ilabel)]
-        if not label:
-            label="po:noname"
+        vals_=list(vals_)
+        cid=vals_[iname]
+        foo_=foo["uris"][:]
+        if anonymized:
+            anon_name=vals_[ilabel]
+            name_="{}-{}".format(B.name,anon_name)
+            B.uid_names[cid]=name_
+            vals_=[el for i,el in enumerate(vals_) if i not in (ilabel,iname)]
+            foo_= [el for i,el in enumerate(foo_) if i not  in (ilabel,iname)]
+        elif not vals_[ilabel]:
+            name_="po:noname-{}-{}-{}".format(cid,B.groupid,B.datetime_snapshot)
             vals_=list(vals_)
-            vals_[ilabel]=label
-        name_label[name]=label
-        ind=P.rdf.IC([tg],P.rdf.ns.fb.Participant,name)
-        P.rdf.link([tg],ind,label,foo["uris"],
-                        vals_,draw=False)
+            vals_[ilabel]=name_
+        else:
+            name_,label=[foo["vals"][i][icount] for i in (iname,ilabel)]
+        ind=P.rdf.IC([tg],P.rdf.ns.fb.Participant,name_)
+        P.rdf.link([tg],ind,None,foo_,
+                        vals_)
         icount+=1
     B.nfriends=len(foo["vals"][0])
-    B.fvars=[trans(i) for i in tkeys]
+    if anonymized:
+        B.fvars=[trans(i) for j,i in enumerate(tkeys) if j not in (ilabel,iname)]
+    else:
+        B.fvars=[trans(i) for i in tkeys]
 
     friendships_=[fnet["relations"][i] for i in ("node1","node2")]
     c("escritos participantes")
     i=1
     for uid1,uid2 in zip(*friendships_):
-        ind1=P.rdf.IC(None,P.rdf.ns.fb.Participant,uid1)
-        ind2=P.rdf.IC(None,P.rdf.ns.fb.Participant,uid2)
-        uids=[r.URIRef(P.rdf.ns.fb.Participant+"#"+str(i)) for i in (uid1,uid2)]
-        P.rdf.L_([tg],uids[0],P.rdf.ns.fb.friend,uids[1])
+        if anonymized:
+            uids=[r.URIRef(P.rdf.ns.fb.Participant+"#"+B.uid_names[i]) for i in (uid1,uid2)]
+        else:
+            uids=[r.URIRef(P.rdf.ns.fb.Participant+"#"+str(i)) for i in (uid1,uid2)]
+        P.rdf.link_([tg],uids[0],None,[P.rdf.ns.fb.friend],[uids[1]])
         if (i%1000)==0:
             c(i)
         i+=1
@@ -213,8 +229,13 @@ def makeMetadata(fnet,inet):
             foo["uris"].append(P.rdf.ns.fb.groupID)
             foo["vals"].append(B.groupuid)
     if B.fb_link:
-        foo["uris"].append(P.rdf.ns.fb.fbLink)
-        foo["vals"].append(B.fb_link)
+        if type(B.fb_link) not in (type([2,3]),type((2,3))):
+            foo["uris"].append(P.rdf.ns.fb.fbLink)
+            foo["vals"].append(B.fb_link)
+        else:
+            for link in B.fb_link:
+                foo["uris"].append(P.rdf.ns.fb.fbLink)
+                foo["vals"].append(link)
     if B.friendship:
         B.ffile="{}{}/base/{}".format(B.prefix,aname,B.fname)
         foo["uris"]+=[P.rdf.ns.fb.originalFriendshipFile,
@@ -314,7 +335,7 @@ network in file:
 {}
 (anonymized: {}).
 Metadata for discovery is in file:
-{}.
+{}
 Original files:
 {}
 {}
