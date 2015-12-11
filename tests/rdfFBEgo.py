@@ -14,6 +14,7 @@ fnames_=[
 ("MariliaPisani06052014.gdf",None,"100000812625301","marilia.pisani"),
 ("RafaelReinehr09042013.gdf",None,"814059950","reinehr"),
 ("VJPixel23052014.gdf",      None,"614664810",None),
+("MassimoCanevacci19062013.gdf",     None,"1327838394","massimo.canevacci"),
         ]
 dpath="../data/fb/gdf/ego/"
 ff=[(fnames_,dpath)]
@@ -54,8 +55,8 @@ fnames_=[
 dpath="../data/fb/gdf/avlab/"
 ff+=[(fnames_,dpath)]
 
-for fnames_,dpath in ff[-1:]:
-    for fnames in fnames_[-2:]:
+for fnames_,dpath in ff[:1]:
+    for fnames in fnames_[-1:]:
         S.fb.triplifyGDF(dpath=dpath,
                          fname=fnames[0],
                          fnamei=None,

@@ -2,7 +2,41 @@ import networkx as x
 def readGML(filename="../data/RenatoFabbri06022014.gml"):
     gg=x.read_gml(filename)
     nodes=gg.nodes(data=True)
+    nodes_=[i[1] for i in nodes]
+    nodes__={}
+    nkeys=nodes_[0].keys()
+    for key in nkeys:
+        if key == "id":
+            nodes__["name"]=[]
+#            nodes__["label"]=[]
+            for node in nodes_:
+                nodes__["name"]+=["user_{}".format(node[key])]
+#                nodes__["label"]+=["user_{}".format(node[key])]
+        else:
+            nodes__[key]=[]
+            for node in nodes_:
+                nodes__[key]+=[node[key]]
+
     edges=gg.edges(data=True)
+    edges_={"node1":[], "node2":[],"name":[]}
+    i=1
+    for edge in edges:
+        u1="user_{}".format(edge[0])
+        u2="user_{}".format(edge[1])
+        edges_["node1"]+=[u1]
+        edges_["node2"]+=[u2]
+        i+=1
+#    if edges[0][2]:
+#        edges_=[i[2] for i in edges]
+#        edges__={}
+#        ekeys=edges_[0].keys()
+#    for key in ekeys:
+#       edges__[key]=[]
+#       for edge in edges_:
+#           edges__[key]+=[edge[key]]
+   
+    return {"relations": edges_,
+            "individuals": nodes__}
     return gg
 def readGDF(filename="../data/RenatoFabbri06022014.gdf"):
     """Made to work with gdf files from my own network and friends and groups"""
