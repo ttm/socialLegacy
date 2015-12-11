@@ -12,7 +12,7 @@ fnames_=[
         ("PedroPauloRocha10032013.gdf",None,"836944624","dpedropaulorocha"),
         ("MarceloSaldanha19112014.gdf",None,"100000028547604","IBEBrasil"),
 ("MariliaPisani06052014.gdf",None,"100000812625301","marilia.pisani"),
-("RafaelReinehr09042013.gdf",None,"814059950","reinehr"),
+("RafaelReinehr09042013.gdf",None,"814059950","reinehr"), #gml better
 ("VJPixel23052014.gdf",      None,"614664810",None),
 ("MassimoCanevacci19062013.gdf",     None,"1327838394","massimo.canevacci"),
         ]

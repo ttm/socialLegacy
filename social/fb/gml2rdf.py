@@ -20,6 +20,12 @@ def triplifyGML(dpath="../data/fb/",fname="foo.gdf",fnamei="foo_interaction.gdf"
     OUTPUTS:
     =======
     the tree in the directory fpath."""
+    if sum(c.isdigit() for c in fname)==4:
+        year=re.findall(r".*(\d\d\d\d).gml",fname)[0][0]
+        B.datetime_snapshot=datetime.date(*[int(i) for i in (year)])
+    if sum(c.isdigit() for c in fname)==12:
+        day,month,year,hour,minute=re.findall(r".*(\d\d)(\d\d)(\d\d\d\d)_(\d\d)(\d\d).gml",fname)[0]
+        B.datetime_snapshot=datetime.datetime(*[int(i) for i in (year,month,day,hour,minute)])
     if sum(c.isdigit() for c in fname)==14:
         day,month,year,hour,minute,second=re.findall(r".*(\d\d)(\d\d)(\d\d\d\d)_(\d\d)(\d\d)(\d\d).gml",fname)[0]
         B.datetime_snapshot=datetime.datetime(*[int(i) for i in (year,month,day,hour,minute,second)])
@@ -43,9 +49,10 @@ def triplifyGML(dpath="../data/fb/",fname="foo.gdf",fnamei="foo_interaction.gdf"
     B.fpath=fpath
     B.prefix="https://raw.githubusercontent.com/OpenLinkedSocialData/{}master/".format(umbrella_dir)
     B.umbrella_dir=umbrella_dir
-
+    c("antes de ler")
     fnet=S.fb.readGML(dpath+fname)     # return networkx graph
     #return fnet
+    c("depois de ler, antes de fazer rdf")
     fnet_=rdfFriendshipNetwork(fnet)   # return rdflib graph
     if B.interaction:
         inet=S.fb.readGML(dpath+fnamei)    # return networkx graph
@@ -53,7 +60,9 @@ def triplifyGML(dpath="../data/fb/",fname="foo.gdf",fnamei="foo_interaction.gdf"
     else:
         inet_=0
     meta=makeMetadata(fnet_,inet_)     # return rdflib graph with metadata about the structure
+    c("depois de rdf, escrita em disco")
     writeAllFB(fnet_,inet_,meta)  # write linked data tree
+    c("cabo")
 
 
 

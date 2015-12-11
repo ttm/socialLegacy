@@ -15,7 +15,10 @@ def readGML(filename="../data/RenatoFabbri06022014.gml"):
         else:
             nodes__[key]=[]
             for node in nodes_:
-                nodes__[key]+=[node[key]]
+                if key in node.keys():
+                    nodes__[key]+=[node[key]]
+                else:
+                    nodes__[key]+=[None]
 
     edges=gg.edges(data=True)
     edges_={"node1":[], "node2":[],"name":[]}
