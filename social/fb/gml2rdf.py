@@ -20,6 +20,7 @@ def triplifyGML(dpath="../data/fb/",fname="foo.gdf",fnamei="foo_interaction.gdf"
     OUTPUTS:
     =======
     the tree in the directory fpath."""
+    c("iniciado tripgml")
     if sum(c.isdigit() for c in fname)==4:
         year=re.findall(r".*(\d\d\d\d).gml",fname)[0][0]
         B.datetime_snapshot=datetime.date(*[int(i) for i in (year)])
@@ -50,8 +51,9 @@ def triplifyGML(dpath="../data/fb/",fname="foo.gdf",fnamei="foo_interaction.gdf"
     B.prefix="https://raw.githubusercontent.com/OpenLinkedSocialData/{}master/".format(umbrella_dir)
     B.umbrella_dir=umbrella_dir
     c("antes de ler")
-    fnet=S.fb.readGML(dpath+fname)     # return networkx graph
-    #return fnet
+    #fnet=S.fb.readGML(dpath+fname)     # return networkx graph
+    fnet=S.fb.readGML2(dpath+fname)     # return networkx graph
+#    return fnet
     c("depois de ler, antes de fazer rdf")
     fnet_=rdfFriendshipNetwork(fnet)   # return rdflib graph
     if B.interaction:
@@ -174,9 +176,6 @@ def rdfFriendshipNetwork(fnet):
     else:
         B.groupuid=None
     iname= tkeys.index("name")
-    ilabel=tkeys.index("label")
-    isex=tkeys.index("label")
-    ilocale=tkeys.index("locale")
     B.uid_names={}
     for vals_ in zip(*foo["vals"]):
         vals_=list(vals_)
