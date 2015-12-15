@@ -9,41 +9,13 @@ from dateutil.parser import parse
 from maccess import tw2 as tw
 c=P.utils.check
 
-def publishSearch(fname,fpath,aname=None,scriptpath=None,created_at=None,tweets_info="a hashtag or a topic (probably)",donated_by="labMacambira.sf.net",latin=False,utf8_fix=True,acquired_through="Twitter search engine"):
+def publishSearch(fname,fpath,aname=None,scriptpath=None,created_at=None,tweets_info="a hashtag or a topic (probably)",donated_by="labMacambira.sf.net",latin=False,utf8_fix=True,acquired_through="Twitter search engine",umbrella_dir=None):
     if not aname:
         print(fname,aname)
         aname=fname.split("/")[-1].split(".")[0]
         if not aname.endswith("_tw"):
             aname+="_tw"
-
-    tg2=P.rdf.makeBasicGraph([["po","tw"],[P.rdf.ns.po,P.rdf.ns.tw]],"Metadata for the snapshot of Twitter messages")
-    ind=P.rdf.IC([tg2],P.rdf.ns.po.Snapshot,
-            aname,"Snapshot {}".format(aname))
-    P.rdf.link([tg2],ind,"Snapshot {}".format(aname),
-                          [P.rdf.ns.po.createdAt,
-                          P.rdf.ns.po.triplifiedIn,
-                          P.rdf.ns.po.donatedBy,
-                          P.rdf.ns.po.availableAt,
-                          P.rdf.ns.po.originalFile,
-                          P.rdf.ns.po.rdfFile,
-                          P.rdf.ns.po.ttlFile,
-                          P.rdf.ns.po.discorveryRDFFile,
-                          P.rdf.ns.po.discoveryTTLFile,
-                          P.rdf.ns.po.acquiredThrough,
-                          P.rdf.ns.rdfs.comment,
-                          ],
-                          [created_at,
-                           datetime.datetime.now(),
-                           donated_by,
-                           "https://github.com/ttm/{}".format(aname),
-                           "https://raw.githubusercontent.com/ttm/{}/master/base/".format(aname),
-                           "https://raw.githubusercontent.com/ttm/{}/master/rdf/{}Translate.owl".format(aname,aname),
-                           "https://raw.githubusercontent.com/ttm/{}/master/rdf/{}Translate.ttl".format(aname,aname),
-                                "https://raw.githubusercontent.com/ttm/{}/master/rdf/{}Meta.owl".format(aname,aname),
-                                "https://raw.githubusercontent.com/ttm/{}/master/rdf/{}Meta.ttl".format(aname,aname),
-                           acquired_through,
-                                "The Twitter messages related to {}".format(tweets_info),
-                           ])
+    PREFIX="https://raw.githubusercontent.com/OpenLinkedSocialData/{}master/".format(umbrella_dir)
 
     tweets=[]
     try:
@@ -63,7 +35,7 @@ def publishSearch(fname,fpath,aname=None,scriptpath=None,created_at=None,tweets_
     #tweet_chuncks=[tweets[i:i+100] for i in range(0,len(tweets),100)]
 #    tweet_chuncks=[tweets[i:i+100] for i in range(0,len(tweets),100)]
     ccount=0
-    fpath_="{}/{}/".format(fpath,aname)
+    fpath_="{}{}/".format(fpath,aname)
     nnicks=0
     nicks_=[]
     nreplies=0
@@ -100,7 +72,7 @@ def publishSearch(fname,fpath,aname=None,scriptpath=None,created_at=None,tweets_
                 uris+=[P.rdf.ns.tw.inReplyToUID]
                 data+=[tweet["in_reply_to_user_id"]]
 
-            P.rdf.link([tg],imsg,msg,uris,data)
+            P.rdf.link([tg],imsg,None,uris,data)
 
             if "retweeted_status" in tweet.keys():
                 tid2=tweet["retweeted_status"]["id_str"]
@@ -112,7 +84,7 @@ def publishSearch(fname,fpath,aname=None,scriptpath=None,created_at=None,tweets_
                 uris+=[P.rdf.ns.tw.precedingMessageContent]
                 data+=[tweet["retweeted_status"]["text"]]
 
-                P.rdf.link([tg],imsg,msg,uris,data)
+                P.rdf.link([tg],imsg,None,uris,data)
 
                 sid2=tweet["retweeted_status"]["user"]["screen_name"]
                 iuser2=P.rdf.IC([tg],P.rdf.ns.tw.Participant,sid2)
@@ -126,7 +98,7 @@ def publishSearch(fname,fpath,aname=None,scriptpath=None,created_at=None,tweets_
                 data+=[tweet["retweeted_status"]["user"]["name"]]
                 uris+=[P.rdf.ns.tw.name]
 
-                P.rdf.link([tg],iuser2,sid2,uris,data)
+                P.rdf.link([tg],iuser2,None,uris,data)
 
             sid=tweet["user"]["screen_name"]
             iuser=P.rdf.IC([tg],P.rdf.ns.tw.Participant,sid)
@@ -147,16 +119,17 @@ def publishSearch(fname,fpath,aname=None,scriptpath=None,created_at=None,tweets_
             uris+=[P.rdf.ns.tw.followersCount]
             data+=[tweet["user"]["friends_count"]]
             uris+=[P.rdf.ns.tw.friendsCount]
-            data+=[tweet["user"]["utc_offset"]]
-            uris+=[P.rdf.ns.tw.utcOffset]
-            P.rdf.link([tg],iuser,sid,uris,data)
+            if tweet["user"]["utc_offset"]:
+                data+=[tweet["user"]["utc_offset"]]
+                uris+=[P.rdf.ns.tw.utcOffset]
+            P.rdf.link([tg],iuser,None,uris,data)
 
             uris=[P.rdf.ns.tw.author]
             uris2=[iuser]
             if "retweeted_status" in tweet.keys():
                 uris+=[P.rdf.ns.tw.retweetOf]
                 uris2+=[imsg2]
-            P.rdf.link_([tg],imsg,msg,uris,uris2)
+            P.rdf.link_([tg],imsg,None,uris,uris2)
 
             # linka msg com usuarios
             # e usuarios entre si?
@@ -166,9 +139,9 @@ def publishSearch(fname,fpath,aname=None,scriptpath=None,created_at=None,tweets_
             # achar as hashtags e colocar jah
 
         P.rdf.writeAll(tg,aname+"Translate{:05d}".format(ccount),fpath_,False,False)
-        if not os.path.isdir(fpath_+"base"):
-            os.mkdir(fpath_+"base")
-        P.utils.pDump(tweets,fpath_+"base/"+"{}{:04d}.pickle".format(aname,ccount))
+        #if not os.path.isdir(fpath_+"base"):
+        #    os.mkdir(fpath_+"base")
+        #P.utils.pDump(tweets,fpath_+"base/"+"{}{:04d}.pickle".format(aname,ccount))
         ccount+=1
         nnicks+=P.utils.countMe( tg[0],"tw:author")
         nicks = P.utils.getAll2(  tg[0],"tw:author")
@@ -200,7 +173,6 @@ def publishSearch(fname,fpath,aname=None,scriptpath=None,created_at=None,tweets_
     #for chunck in tweet_chuncks:
     #    P.utils.pDump(chunck,fpath_+"base/"+"{}{:04d}.pickle".format(aname,i))
     #    i+=1
-    P.rdf.writeAll(tg2,aname+"Meta",fpath_,1)
 
     # faz um README
     #dates=[i for i in tg_[0].query(r"SELECT ?p WHERE {?s tw:sentAt ?p} ORDER BY ASC(?p)")]
@@ -216,16 +188,65 @@ def publishSearch(fname,fpath,aname=None,scriptpath=None,created_at=None,tweets_
     #nreplies= P.utils.countMe(tg_[0],"tw:inReplyToUID")
     #nretweets=P.utils.countMe(  tg_[0],"tw:retweetOf")
     #nmsgs=    P.utils.countMe(  tg_[0], "tw:messageContent")
+    tg2=P.rdf.makeBasicGraph([["po","tw"],[P.rdf.ns.po,P.rdf.ns.tw]],"Metadata for the snapshot of Twitter messages")
+    ind=P.rdf.IC([tg2],P.rdf.ns.po.Snapshot,
+            aname,"Snapshot {}".format(aname))
+    repourl="https://github.com/OpenLinkedSocialData/{}tree/master/{}".format(umbrella_dir,aname)
+    metaurl="{}rdf/{}Meta.owl".format(PREFIX,aname)
+    mvals=[]
+    muris=[]
+    for i in range(ccount):
+        translate_url="{}rdf/{}Translate{:05d}".format(PREFIX,aname,i)
+        muris+=[P.rdf.ns.po.rdfFile,
+               P.rdf.ns.po.ttlFile]
+        mvals+=[translate_url+".owl",
+               translate_url+".ttl"]
+    P.rdf.link([tg2],ind,"Snapshot {}".format(aname),
+                          [P.rdf.ns.po.createdAt,
+                          P.rdf.ns.po.triplifiedIn,
+                          P.rdf.ns.po.donatedBy,
+                          P.rdf.ns.po.availableAt,
+#                          P.rdf.ns.po.originalFile,
+                          P.rdf.ns.po.discorveryRDFFile,
+                          P.rdf.ns.po.discoveryTTLFile,
+                          P.rdf.ns.po.acquiredThrough,
+                          P.rdf.ns.rdfs.comment,
+                          P.rdf.ns.tw.nParticipants,
+                          P.rdf.ns.tw.nMessages,
+                          P.rdf.ns.tw.nReTweets,
+                          P.rdf.ns.tw.nReplies,
+                          ]+muris,
+                          [created_at,
+                           datetime.datetime.now(),
+                           donated_by,
+                           repourl,
+#                           "https://raw.githubusercontent.com/ttm/{}/master/base/".format(aname),
+                                metaurl,
+                                "{}rdf/{}Meta.ttl".format(PREFIX,aname),
+                           acquired_through,
+                                "The Twitter messages related to {}".format(tweets_info),
+                                nnicks,
+                                nmsgs,
+                                nretweets,
+                                nreplies
+                           ]+mvals)
+    P.rdf.writeAll(tg2,aname+"Meta",fpath_,1)
     with open(fpath_+"README","w") as f:
         f.write("""This repo delivers RDF data from the Twitter messages about {}
-collected around {}, with messages from {} to {} and {} users.
+collected around {}, with messages from {} to {} and {} participants.
 Total messages count {} of which {} are replies and {} are retweets
 The linked data is available at rdf/ dir and was
 generated by the routine in the script/ directory.
 Original data from Twitter in data/\n
-\nUsers: {}\n""".format(
+Metadata for discovery is in file:
+{}
+All files should be available at the git repository:
+{}
+\n
+""".format(
             tweets_info,created_at,date1,date2,
-            nnicks,nmsgs,nreplies,nretweets,nicks_))
+            nnicks,nmsgs,nreplies,nretweets,
+            repourl,metaurl))
     return tg, tweets
 
 

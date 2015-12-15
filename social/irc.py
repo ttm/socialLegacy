@@ -133,7 +133,7 @@ def publishLog2(fdir,fpath,aname=None,scriptpath=None,created_at=None,channel_in
             ind=P.rdf.IC([tg],P.rdf.ns.irc.Participant,"{}-{}".format(aname,nick))
             uris=[P.rdf.ns.irc.nick]
             data=[nick]
-            P.rdf.link([tg],ind,nick,uris,data)
+            P.rdf.link([tg],ind,None,uris,data)
 
             dt=datetime.datetime(*[int(i) for i in (year,month,day,hour,minute,second)])
             timestamp=dt.isoformat()
@@ -150,8 +150,8 @@ def publishLog2(fdir,fpath,aname=None,scriptpath=None,created_at=None,channel_in
                 msg="EMPTYMSG"
             uris+=[P.rdf.ns.irc.sentAt,P.rdf.ns.irc.indirectMessage]
             data+=[dt,True]
-            P.rdf.link([tg],imsg,msg,uris,data)
-            P.rdf.link_([tg],imsg,msg,[P.rdf.ns.irc.user],[ind])
+            P.rdf.link([tg],imsg,None,uris,data)
+            P.rdf.link_([tg],imsg,None,[P.rdf.ns.irc.user],[ind])
             if (1+count)%1000==0:
                 if Tbreak: break
                 c("indirect msgs check 1000")
@@ -198,7 +198,7 @@ def publishLog2(fdir,fpath,aname=None,scriptpath=None,created_at=None,channel_in
             #    wer=asd
             uris=[P.rdf.ns.irc.nick]
             data=[nick]
-            P.rdf.link([tg],ind,nick,uris,data)
+            P.rdf.link([tg],ind,None,uris,data)
             # usuario se conecta com o nick (strings)
             #P.rdf.link([tg],ind,nick,uris,data)
             inds2=[]
@@ -207,7 +207,7 @@ def publishLog2(fdir,fpath,aname=None,scriptpath=None,created_at=None,channel_in
                 ind2=P.rdf.IC([tg],P.rdf.ns.irc.Participant,"{}-{}".format(aname,nickfoo))
                 data =[nickfoo]
                 uris =[P.rdf.ns.irc.nick]
-                P.rdf.link([tg],ind2,nickfoo,uris,data)
+                P.rdf.link([tg],ind2,None,uris,data)
                 inds2+=[ind2]
             inds3=[]
             for nickfoo in nicks3:
@@ -234,7 +234,7 @@ def publishLog2(fdir,fpath,aname=None,scriptpath=None,created_at=None,channel_in
                 msg="EMPTYMSG"
             uris+=[P.rdf.ns.irc.sentAt,P.rdf.ns.irc.systemMessage]
             data+=[dt,False]
-            P.rdf.link([tg],imsg,msg,uris,data)
+            P.rdf.link([tg],imsg,None,uris,data)
                 # adiciona tripla da msg para empty message true
 
             uris=[P.rdf.ns.irc.author]
@@ -248,7 +248,7 @@ def publishLog2(fdir,fpath,aname=None,scriptpath=None,created_at=None,channel_in
                 uris3+=[ind3]
             uris23=uris2+uris3
 
-            P.rdf.link_([tg],imsg,msg,uris,uris23)
+            P.rdf.link_([tg],imsg,None,uris,uris23)
 
             if (1+count)%1000==0:
                 if Tbreak: break
@@ -259,7 +259,7 @@ def publishLog2(fdir,fpath,aname=None,scriptpath=None,created_at=None,channel_in
     fpath_="{}/{}/".format(fpath,aname)
 #    return fpath_, tg_,exp,t,t_
 #    return tg_
-    P.rdf.writeAll(tg_,aname+"Translate",fpath_,False,1)
+    P.rdf.writeAll(tg_,aname+"Translate",fpath_,False,1,sizelimit=100000)
     # copia o script que gera este codigo
     if not os.path.isdir(fpath_+"scripts"):
         os.mkdir(fpath_+"scripts")
@@ -359,7 +359,7 @@ def publishLog(fname,fpath,aname=None,scriptpath=None,created_at=None,channel_in
         ind=P.rdf.IC([tg],P.rdf.ns.irc.Participant,"{}-{}".format(aname,nick))
         uris=[P.rdf.ns.irc.nick]
         data=[nick]
-        P.rdf.link([tg],ind,nick,uris,data)
+        P.rdf.link([tg],ind,None,uris,data)
 
 
         dt=datetime.datetime(*[int(i) for i in (year,month,day,hour,minute,second)])
@@ -377,8 +377,8 @@ def publishLog(fname,fpath,aname=None,scriptpath=None,created_at=None,channel_in
             msg="EMPTYMSG"
         uris+=[P.rdf.ns.irc.sentAt,P.rdf.ns.irc.systemMessage,P.rdf.ns.irc.impliedUser]
         data+=[dt,True]
-        P.rdf.link([tg],imsg,msg,uris,data)
-        P.rdf.link_([tg],imsg,msg,[P.rdf.ns.irc.impliedUser],[ind])
+        P.rdf.link([tg],imsg,None,uris,data)
+        P.rdf.link_([tg],imsg,None,[P.rdf.ns.irc.impliedUser],[ind])
         if (1+count)%1000==0:
             if Tbreak: break
             c("operational msgs check 1000")
@@ -414,7 +414,7 @@ def publishLog(fname,fpath,aname=None,scriptpath=None,created_at=None,channel_in
         #    wer=asd
         uris=[P.rdf.ns.irc.nick]
         data=[nick]
-        P.rdf.link([tg],ind,nick,uris,data)
+        P.rdf.link([tg],ind,None,uris,data)
         # usuario se conecta com o nick (strings)
         #P.rdf.link([tg],ind,nick,uris,data)
         inds2=[]
@@ -423,7 +423,7 @@ def publishLog(fname,fpath,aname=None,scriptpath=None,created_at=None,channel_in
             ind2=P.rdf.IC([tg],P.rdf.ns.irc.Participant,"{}-{}".format(aname,nickfoo))
             data =[nickfoo]
             uris =[P.rdf.ns.irc.nick]
-            P.rdf.link([tg],ind2,nickfoo,uris,data)
+            P.rdf.link([tg],ind2,None,uris,data)
             inds2+=[ind2]
         inds3=[]
         for nickfoo in nicks3:
@@ -450,7 +450,7 @@ def publishLog(fname,fpath,aname=None,scriptpath=None,created_at=None,channel_in
             msg="EMPTYMSG"
         uris+=[P.rdf.ns.irc.sentAt,P.rdf.ns.irc.systemMessage]
         data+=[dt,False]
-        P.rdf.link([tg],imsg,msg,uris,data)
+        P.rdf.link([tg],imsg,None,uris,data)
             # adiciona tripla da msg para empty message true
 
         uris=[P.rdf.ns.irc.author]
@@ -464,7 +464,7 @@ def publishLog(fname,fpath,aname=None,scriptpath=None,created_at=None,channel_in
             uris3+=[ind3]
         uris23=uris2+uris3
 
-        P.rdf.link_([tg],imsg,msg,uris,uris23)
+        P.rdf.link_([tg],imsg,None,uris,uris23)
 
         if (1+count)%1000==0:
             if Tbreak: break
@@ -475,7 +475,7 @@ def publishLog(fname,fpath,aname=None,scriptpath=None,created_at=None,channel_in
     fpath_="{}/{}/".format(fpath,aname)
 #    return fpath_, tg_,exp,t,t_
 #    return tg_
-    P.rdf.writeAll(tg_,aname+"Translate",fpath_,False,1)
+    P.rdf.writeAll(tg_,aname+"Translate",fpath_,False,1,sizelimit=100000)
     # copia o script que gera este codigo
     if not os.path.isdir(fpath_+"scripts"):
         os.mkdir(fpath_+"scripts")

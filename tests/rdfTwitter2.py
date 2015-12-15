@@ -19,7 +19,9 @@ ddir="../data/tw/"
 #    i+=1
 scriptpath=os.path.realpath(__file__)
 fpath="./publishing/tw/"
-stags=["QuartaSemRacismoClubeSDV_tw",
+stags=[
+"python",
+"QuartaSemRacismoClubeSDV_tw",
 "arenaNETmundial",
 "SnapDetremura_tw",
 "art_tw",
@@ -27,13 +29,36 @@ stags=["QuartaSemRacismoClubeSDV_tw",
 "god_tw",
 "music_tw",
 "obama_tw",
-"python",
 "science_tw",
 "porn_tw",
 "ChennaiFloods_tw",
 "SyriaVote_tw",
 "MAMA2015_tw",
-][-1:]
+]
+stags=["QuartaSemRacismoClubeSDV_tw",
+"arenaNETmundial",
+"SnapDetremura_tw",
+"art_tw"]
+umbrella_dir="twitter1/"
+stags=[
+"game_tw",
+"god_tw",
+"music_tw",
+"obama_tw",
+"science_tw",
+"porn_tw",
+]
+umbrella_dir="twitter2/"
+stags=[
+"ChennaiFloods_tw",
+"SyriaVote_tw",
+]
+umbrella_dir="twitter3/"
+
+stags=[
+"MAMA2015_tw",
+]
+umbrella_dir="twitter3/"
 
 #fnames=[sid+".pickle","arenaNETmundial.pickle"]
 fnames=[i+".pickle" for i in stags]
@@ -42,5 +67,5 @@ descriptions=["tweets with the #{} hashtag".format(i) for i in stags]
 for fname,desc in zip(fnames,descriptions):
     b=S.tw.publishSearch("../data/tw/{}".format(fname),fpath,
             None,scriptpath,datetime.date(2015, 12, 3),
-            desc)
+            desc,umbrella_dir=umbrella_dir)
 
