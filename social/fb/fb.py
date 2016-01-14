@@ -6,7 +6,7 @@ import percolation as P
 c=P.utils.check
 this_dir = os.path.split(__file__)[0]
 
-def triplifyGML(fname="foo.gml",fpath="./fb/",scriptpath=None,uid=None,sid=None):
+def triplifyGML(fname="foo.gml",fpath="./fb/",scriptpath=None,uid=None,sid=None,extra_info=None):
     """Produce a linked data publication tree from a standard GML file.
 
     INPUTS:
@@ -46,42 +46,54 @@ def triplifyGML(fname="foo.gml",fpath="./fb/",scriptpath=None,uid=None,sid=None)
         name_=" ".join(re.findall("[A-Z][^A-Z]*",name))
     else:
         name_=" ".join(re.findall("[A-Z][^A-Z]*",name))
-    tg=P.rdf.makeBasicGraph([["po","fb"],[P.rdf.ns.per,P.rdf.ns.fb]],"My facebook ego friendship network")
-    tg2=P.rdf.makeBasicGraph([["po","fb"],[P.rdf.ns.per,P.rdf.ns.fb]],"RDF metadata for the facebook friendship network of my son")
-    ind=P.rdf.IC([tg2],P.rdf.ns.po.Snapshot,
-            aname,"Snapshot {}".format(aname))
-    c("snapshot")
     aname+="_fb"
     name+="_fb"
-    P.rdf.link([tg2],ind,"Snapshot {}".format(aname),
+    c("started snapshot",aname)
+    tg=P.rdf.makeBasicGraph([["po","fb"],[P.rdf.ns.per,P.rdf.ns.fb]],"the {} facebook ego friendship network")
+    tg2=P.rdf.makeBasicGraph([["po","fb"],[P.rdf.ns.per,P.rdf.ns.fb]],"RDF metadata for the facebook friendship network of my son")
+    snapshot=P.rdf.IC([tg2],P.rdf.ns.po.FacebookSnapshot,
+            aname,"Snapshot {}".format(aname))
+    extra_uri=extra_val=[]
+    if extra_info:
+        extra_uri=[NS.po.extraInfo]
+        extra_val=[extra_info]
+    P.rdf.link([tg2],snapshot,"Snapshot {}".format(aname),
                           [P.rdf.ns.po.createdAt,
                           P.rdf.ns.po.triplifiedIn,
                           P.rdf.ns.po.donatedBy,
                           P.rdf.ns.po.availableAt,
                           P.rdf.ns.po.originalFile,
-                          P.rdf.ns.po.rdfFile,
-                          P.rdf.ns.po.ttlFile,
-                          P.rdf.ns.po.discorveryRDFFile,
-                          P.rdf.ns.po.discoveryTTLFile,
+                          P.rdf.ns.po.onlineTranslateXMLFile,
+                          P.rdf.ns.po.onlineTranslateTTLFile,
+                          P.rdf.ns.po.translateXMLFile,
+                          P.rdf.ns.po.translateTTLFile,
+                           P.rdf.ns.po.onlineMetaXMLFile,
+                           P.rdf.ns.po.onlineMetaTTLFile,
+                           P.rdf.ns.po.metaXMLFilename,
+                           P.rdf.ns.po.metaTTLFilename,
                           P.rdf.ns.po.acquiredThrough,
                           P.rdf.ns.rdfs.comment,
                           P.rdf.ns.fb.uid,
                           P.rdf.ns.fb.sid
-                          ],
+                          ]+extra_uri,
                           [datetime_snapshot,
                            datetime.datetime.now(),
                            name,
                            "https://github.com/ttm/{}".format(aname),
                            "https://raw.githubusercontent.com/ttm/{}/master/base/{}".format(aname,fname.split("/")[-1]),
-                           "https://raw.githubusercontent.com/ttm/{}/master/rdf/{}Translate.owl".format(aname,aname),
+                           "https://raw.githubusercontent.com/ttm/{}/master/rdf/{}Translate.rdf".format(aname,aname),
                            "https://raw.githubusercontent.com/ttm/{}/master/rdf/{}Translate.ttl".format(aname,aname),
-                                "https://raw.githubusercontent.com/ttm/{}/master/rdf/{}Meta.owl".format(aname,aname),
+                           "{}Translate.rdf".format(aname),
+                           "{}Translate.ttl".format(aname),
+                            "https://raw.githubusercontent.com/ttm/{}/master/rdf/{}Meta.rdf".format(aname,aname),
                                 "https://raw.githubusercontent.com/ttm/{}/master/rdf/{}Meta.ttl".format(aname,aname),
+                                "{}Meta.owl".format(aname),
+                                "{}Meta.ttl".format(aname),
                            "Netvizz",
                                 "The facebook friendship network from {}".format(name_),
                                 uid,
                                 sid
-                           ])
+                           ]+extra_val)
     #for friend_attr in fg2["friends"]:
     c((aname,name_,datetime_snapshot))
     fg2=x.read_gml(fname)
@@ -91,15 +103,16 @@ def triplifyGML(fname="foo.gml",fpath="./fb/",scriptpath=None,uid=None,sid=None)
         ind=P.rdf.IC([tg],P.rdf.ns.fb.Participant,"{}-{}".format(aname,uid))
         if "locale" in fg2.node[uid].keys():
             data=[fg2.node[uid][attr] for attr in ("id","label","locale","sex","agerank","wallcount")]
-            uris=[P.rdf.ns.fb.gid, P.rdf.ns.fb.name,
-                        P.rdf.ns.fb.locale, P.rdf.ns.fb.sex,
-                        P.rdf.ns.fb.agerank,P.rdf.ns.fb.wallcount]
+            uris=[NS.fb.gid,    NS.fb.name,
+                  NS.fb.locale, NS.fb.sex,
+                  NS.fb.agerank,NS.fb.wallcount]
         else:
             data=[fg2.node[uid][attr] for attr in ("id","label","sex","agerank","wallcount")]
-            uris=[P.rdf.ns.fb.gid, P.rdf.ns.fb.name,
-                        P.rdf.ns.fb.sex,
-                        P.rdf.ns.fb.agerank,P.rdf.ns.fb.wallcount]
-        P.rdf.link([tg],ind,data[1],uris,data,draw=False)
+            uris=[NS.fb.gid,    NS.fb.name,
+                  NS.fb.sex,
+                  NS.fb.agerank,NS.fb.wallcount]
+        P.rdf.link([tg],ind, None,uris,data,draw=False)
+        P.rdf.link([tg],ind,None,[NS.po.snapshot],[snapshot],draw=False)
 
 
     #friends_=[fg2["friends"][i] for i in ("name","label","locale","sex","agerank")]
@@ -117,20 +130,13 @@ def triplifyGML(fname="foo.gml",fpath="./fb/",scriptpath=None,uid=None,sid=None)
         flabel="{}-{}-{}".format(aname,uid1,uid2)
         ind=P.rdf.IC([tg],P.rdf.ns.fb.Friendship,
                 flabel)
-#                flabel,"Friendship "+flabel)
-#        ind1=P.rdf.IC([tg],P.rdf.ns.fb.Friendship,uid1,"")
-#        ind2=P.rdf.IC([tg],P.rdf.ns.fb.Friendship,uid2,"")
-#        uids=[P.rdf.IC(None,P.rdf.ns.fb.Participant,i) for i in (uid1,uid2)]
         uids=[P.rdf.IC(None,P.rdf.ns.fb.Participant,"{}-{}".format(aname,i)) for i in (uid1,uid2)]
-        #uids=[r.URIRef(P.rdf.ns.fb.Participant+"#"+str(i)) for i in (uid1,uid2)]
-        P.rdf.link_([tg],ind,flabel,[P.rdf.ns.fb.member]*2, uids,draw=False)
+        P.rdf.link_([tg],ind,flabel,[NS.po.snapshot]+[NS.fb.member]*2,
+                                    [snapshot]+uids,draw=False)
         P.rdf.L_([tg],uids[0],P.rdf.ns.fb.friend,uids[1])
         if (i%1000)==0:
             c(i)
         i+=1
-    P.rdf.G(tg[0],P.rdf.ns.fb.friend,
-            P.rdf.ns.rdf.type,
-            P.rdf.ns.owl.SymmetricProperty)
     c("escritas amizades")
     tg_=[tg[0]+tg2[0],tg[1]]
     fpath_="{}/{}/".format(fpath,aname)
@@ -148,13 +154,13 @@ def triplifyGML(fname="foo.gml",fpath="./fb/",scriptpath=None,uid=None,sid=None)
     # faz um README
     with open(fpath_+"README","w") as f:
         f.write("""This repo delivers RDF data from the facebook
-friendship network of {} collected at {}.
+friendship network of {} ({}) collected at {}.
 It has {} friends with metadata {};
 and {} friendships.
 The linked data is available at rdf/ dir and was
 generated by the routine in the script/ directory.
 Original data from Netvizz in data/\n""".format(
-            name_,datetime_snapshot,
+            name_,aname,datetime_snapshot,
             fg2.number_of_nodes(),
                     "name, locale (maybe), sex, agerank and wallcount",
                     fg2.number_of_edges()))

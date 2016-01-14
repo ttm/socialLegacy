@@ -17,6 +17,7 @@ fnames_=[
 ("MassimoCanevacci19062013.gdf",     None,"1327838394","massimo.canevacci"),
         ]
 dpath="../data/fb/gdf/ego/"
+ff+=[(fnames_,dpath,None)]
 ff=[(fnames_,dpath)]
 fnames_=[
         ("AnaCelia18032014.gdf",None,"1450596979",0),
@@ -28,6 +29,7 @@ fnames_=[
         ("RenatoFabbri19032014.gdf",None,"781909429","renato.fabbri")
         ]
 dpath="../data/fb/gdf/posAvlab/"
+ff+=[(fnames_,dpath,None)]
 ff+=[(fnames_,dpath)]
 fnames_=[
 ("CalebLuporini25022014.gdf",     None,"1110305437","calebml"),
@@ -53,9 +55,9 @@ fnames_=[
 ]
 #("FideoFuturalista22022014.gdf",  None,0,0),
 dpath="../data/fb/gdf/avlab/"
-ff+=[(fnames_,dpath)]
+ff+=[(fnames_,dpath,"from avlab in Feb/21-3,25/2015")]
 
-for fnames_,dpath in ff[:1]:
+for fnames_,dpath,info in ff[:1]:
     for fnames in fnames_[-1:]:
         S.fb.triplifyGDF(dpath=dpath,
                          fname=fnames[0],
@@ -66,5 +68,6 @@ for fnames_,dpath in ff[:1]:
                          sid=fnames[3],
                          fb_link=None,
                          ego=True,
+                         extra_info=info
                          umbrella_dir=umbrella_dir)
 

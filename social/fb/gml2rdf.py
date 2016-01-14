@@ -70,7 +70,7 @@ def triplifyGML(dpath="../data/fb/",fname="foo.gdf",fnamei="foo_interaction.gdf"
 
 def trans(tkey):
     if tkey=="name":
-        return "uid"
+        return "numericID"
     if tkey=="label":
         return "name"
     return tkey
