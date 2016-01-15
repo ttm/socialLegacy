@@ -70,39 +70,44 @@ or
                         self.online_prefix+"/rdf/"+self.irdf,
                         self.online_prefix+"/rdf/"+self.ittl,
                         self.interactions_anononymized)
-            originals="{}\n{}".format(self.ffile,self.ifile)
+            originals="{}/data/{}\n{}/data/{}".format(self.online_prefix,self.filename_friendships,
+                                                      self.online_prefix,self.filename_interactions)
         else:
             tinteraction=""
-            originals=self.ffile
+            originals="{}/data/{}".format(self.online_prefix,self.filename_friendships)
         P.rdf.writeAll(mnet,aname+"Meta",fpath_,1)
         # faz um README
         with open(fpath_+"README","w") as f:
             f.write("""This repo delivers RDF data from the facebook
-                            friendship network of {} collected around {}.
-                            {} individuals with metadata {}
-                            and {} friendships constitute the friendship network in file:
-                            {} \nor \n{}
-                            (anonymized: {}).{}
+                            friendship network of {snapid} collected around {date}.
+                            {nf} individuals with metadata {fvars}
+                            and {nfs} friendships constitute the friendship network in file:
+                            {frdf} \nor \n{fttl}
+                            (anonymized: {fan}).
+                            {tinteraction}
                             Metadata for discovery is in file:
-                            {} \nor {\n}
+                            {mrdf} \nor \n{mttl}
                             Original files:
-                            {}
-                            Ego network: {}
-                            Friendship network: {}
-                            Interaction network: {}
+                            {origs}
+                            Ego network: {ise}
+                            Friendship network: {isf}
+                            Interaction network: {isi}
                             All files should be available at the git repository:
-                            {}
+                            {ava}
                             \n""".format(
-                self.snapshotid,self.datetime_string,
-                self.nfriends,str(self.fvars),
-                        self.nfriendships,
-                        self.frdf,self.fttl,
-                        self.friendships_anonymized,
-                        tinteraction,
+                snapid=self.snapshotid,date=self.datetime_string,
+                nf=self.nfriends,fvars=str(self.fvars),
+                        nfs=self.nfriendships,
+                        frdf=self.frdf,fttl=self.fttl,
+                        fan=self.friendships_anonymized,
+                        tinteraction=tinteraction,
                         self.mrdf,
                         self.mttl,
-                        self.online_prefix+"/data/"+originals,
-                        self.ego,self.friendship,self.interaction,self.available_dir
+                        originals,
+                        ise=self.isego,
+                        isf=self.isfriendship,
+                        isi=self.isinteraction,
+                        ava=self.available_dir
                         ))
 
     def makeMetadata(self,fnet,inet):
