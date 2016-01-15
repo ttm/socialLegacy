@@ -12,3 +12,4 @@ from . import tw
 from . import ld
 from . import utils
 from . import fsong
+from . import collections

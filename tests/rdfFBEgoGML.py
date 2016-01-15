@@ -17,7 +17,6 @@ fnames_=[
         ("CalebLuporini19022013.gml",None,"1110305437","calebml"),
         ("CamilaBatista23022014.gml",None,"100001707143512","camila.batista.3382"),
         ("DanielPenalva18022013.gml",None,"100000077490764","barthor.la.zule"),
-#        ("RafaelReinehr09042013_1148.gml",None,"814059950","reinehr"), #gml better
         ("GabiThume19022013_0440.gml",None,"100002011676407","gabithume"),
         ("GrahamForrest28012013.gml",None,0,0),
         ("LailaManuelle17012013_0258.gml",None,"1713144485","laila.manuelle"),
