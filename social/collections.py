@@ -6,8 +6,58 @@ class Collections:
         tw=self.getTWFiles()
         gmane=self.getGmaneFiles()
         irc=self.getIRCFiles()
+    def groupTwitterFilesByEquivalents(self,files):
+        filesgroups=[]
+        radicals=set()
+        for afile in files:
+            radical=afile.split("_")[0]
+            if radical not in radicals:
+                radicals.add(radical)
+                tfiles=[i for i in files if i.startswith(radical)]
+                filesgroups+=[tfiles]
+        return filegroups
+
+    def groupTwitterFileGroupsForPublishing(self,filegroups):
+        filegroups_grouped=[]
+        i=0
+        agroup=[]
+        asize=0
+        for group in filegroups:
+            size=0
+            for afile in group:
+                size+=os.path.getsize(afile)
+            if size/10**9>.9: # if total size is bigger than 1GB, put it alone:
+                filegroups_grouped.append([group])
+            else:
+                asize+=size
+                agroup.append(group)
+                if asize/10**9>1: # if > 1GB
+                    filegroups_grouped.append(agroup)
+                    agroup=[]
+                    asize=0
+        is agroup:
+            filegroups_grouped.append(agroup)
+        return silegroups_grouped
+
     def getTWFiles(self):
-        raise NotImplementedError("Twitter get files is currently not implemented")
+        """Get data files with Twitter messages (tweets).
+        
+        Each item is a list of pickle files on the ../data/tw/ directory
+        (probably with some hashtag or common theme).
+        Use social.tw.search and social.tw.stream to get tweets.
+        Tweets are excluded from package to ease sharing."""
+
+        ddir="../data/tw/"
+        # get files in dir
+        # order by size, if size
+        # group them so that the total filesize is smaller then 1GB-1.4GB
+        files=os.path.listdir(ddir)
+        files=[i for i in files if os.path.getsize(i)]
+        files.sort(key=lambda i: os.path.getsize(i))
+        filegroups=self.groupTwitterFilesByEquivalents(files)
+        filegroups_grouped=self.groupTwitterFileGroupsForPublishing(filegroups)
+        return filegroups_grouped
+
     def getIRCFiles(self):
         raise NotImplementedError("IRC get files is currently not implemented")
     def getGmaneFiles(self):
@@ -15,7 +65,7 @@ class Collections:
     def getFBFiles(self):
         egogdf,groupgdf=self.getFBGDF()
         egogml=self.getFBGML()
-        return dict(egogdf=egogdf,egogml=egogml,groupgdf=groupgdf)
+        return dict(egogdf=egogdf,egogml=egogml,groupgdf=groupgdf,help_="each dict is a group of files with extra info (ids, urls, comments)")
     def getFBGDF(self):
         egogdf=getFBGDFEgo()
         groupgdf=getFBGDFGroup()
