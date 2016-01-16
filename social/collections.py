@@ -1,11 +1,66 @@
 __doc__="directions for the builtin collection of social data"
 
-class Collections:
-    def __init__(self):
-        fb=self.getFBFiles()
-        tw=self.getTWFiles()
-        gmane=self.getGmaneFiles()
-        irc=self.getIRCFiles()
+class SystemConstants:
+    gmanedir="../data/gmane/",twitterdir="../data/tw"
+    facebookdir="../data/fb/",ircdir="../data/irc/"
+    aadir="../../aa01/rdf/",participadir="../../participa/rdf/"
+    cidadedemocraticadir="../../cidadedemocratica/rdf/"
+
+    aarepo="https://github.com/OpenLinkedSocialData/aa01/"
+    participarepo="https://github.com/OpenLinkedSocialData/participa/"
+    cidadedemocraticarepo="https://github.com/OpenLinkedSocialData/cidadedemocratica/"
+
+class SparqlEndpoints:
+    endpoint_dev="http://200.144.255.210:8082/RTDB"
+    endpoint_dev="http://localhost:9082/RTDB"
+    endpoint1="http://openlinkedsocialdata/RTDB/"
+    endpoint1="http://openlinkedsocialdata/sandbox/"
+    endpoint1="http://openlinkedsocialdata/sandbox/"
+class NameConstants:
+    name1="SOLDA is Open Linked Social Data"
+    name2="SOLD is Open Linked Social Data"
+    name3="DASOL is Open Linked Social Data"
+    name4="OLDS is Open Linked Social Data"
+    name5="LODS is Open Linked Social Data"
+    name6="LODS is Open Linked Social Data"
+    name7="DSol is Open Linked Social Data"
+    name8="D-Sol is Open Linked Social Data"
+    name9="Sold is Open Linked Social Data"
+    name10="Solda is Open Linked Social Data"
+    name_chosen="Solda is social open linked data"
+    name_note="the name is the phase because it is not only the data.\
+            Solda is the collection as a colletion defined by the\
+            category of social data in the linked and open forms."
+    name_note2="In other words, the data in the social, aa,
+            participa and cidadedemocratica repositories are example data."
+
+
+class DatafileCollections:
+    def __init__(self,gmanedir=SystemConstants.gmanedir,twitterdir=SystemConstantes.twitterdir,\
+                      facebookdir=SystemConstants.facebookdir,ircdir=SystemConstants.ircdir,\
+                      aadir=SystemConstants.aadir,participadir=SystemConstants.participadir,\
+                      cidadedemocraticadir=SystemConstants.cidadedemocraticadir):
+        facebook_raw_filenames=self.getFBFiles(facebookdir)
+        twitter-raw_filenames=self.getTWFiles(twitterdir)
+        gmane_raw_filenames=self.getGmaneFiles(gmanedir)
+        irc_raw_filenames=self.getIRCFiles(ircdir)
+
+        aa_rdf_filenames=self.getAAFiles(aadir)
+        participa_rdf_filenames=self.getParticipaFiles(participadir)
+        cidadedemocratica_rdf_filenames=self.getCidadeDemocraticaFiles(cidadedemocraticadir)
+
+    def getParticipaFiles(participadir):
+        if not os.path.isdir(participadir):
+            print("Please download Participabr files from:\n"+SystemConstants.participarepo+\
+                    "or provide a valid path")
+
+    def getCidadeDemocraticaFiles(cidadedemocraticadir):
+        if not os.path.isdir(cidadedemocraticadir):
+            print("Please download Cidade Democrática files from:\n"+SystemConstants.cidadedemocraticarepo)
+        # get rdf files
+        files=os.listdir(cidadedemocraticadir)
+        return [cidadedemocraticadir+i for i in files]
+
     def groupTwitterFilesByEquivalents(self,files):
         filesgroups=[]
         radicals=set()

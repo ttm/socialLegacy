@@ -174,6 +174,8 @@ or
             foo["uris"]+=[
                           NS.fb.onlineOriginalInteractionFile,
                           NS.fb.originalInteractionFilename,
+                          NS.U("http://example.com/void.ttl#MyDataset"),
+                          NS.void.voidFile,
                           NS.po.onlineInteractionXMLFile,
                           NS.po.onlineinteractionTTLFile,
                           NS.po.interactionXMLFilename,
@@ -353,8 +355,8 @@ or
             ind=P.rdf.IC([tg],NS.Interaction,iid)
             
             uids=[r.URIRef(NS.fb.Participant+"#{}-{}".format(self.snapshotid,i)) for i in (uid1,uid2)]
-            P.rdf.link_([tg],ind,[P.rdf.ns.fb.iFrom,P.rdf.ns.fb.iTo]+[NS.po.snapshot],uids+[self.snapshot])
-            P.rdf.link([tg],ind,[P.rdf.ns.fb.weight],[weight_])
+            P.rdf.link_([tg],ind,[NS.fb.iFrom,P.rdf.ns.fb.iTo]+[NS.po.snapshot],uids+[self.snapshot])
+            P.rdf.link([tg],ind,[ NS.fb.weight],[weight_])
             if (i%1000)==0:
                 c("interactions: ", i)
             i+=1
