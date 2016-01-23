@@ -172,10 +172,10 @@ or
 
         if self.interaction:
             foo["uris"]+=[
+                          NS.void.voidFile,
                           NS.fb.onlineOriginalInteractionFile,
                           NS.fb.originalInteractionFilename,
                           NS.U("http://example.com/void.ttl#MyDataset"),
-                          NS.void.voidFile,
                           NS.po.onlineInteractionXMLFile,
                           NS.po.onlineinteractionTTLFile,
                           NS.po.interactionXMLFilename,
@@ -189,6 +189,7 @@ or
             irdf="{}Interaction.rdf".format(online_prefix,self.snapshotid)
             ittl="{}Interaction.ttl".format(online_prefix,self.snapshotid)
             foo["vals"]+=[
+                          NS.OpenLinkedSocialData
                           ifile
                           self.filename_interactions,
                           online_prefix+"/rdf/"+irdf,

@@ -5,6 +5,8 @@ from bs4 import BeautifulSoup
 import percolation as P
 c=P.utils.check
 this_dir = os.path.split(__file__)[0]
+NS=P.rdf.ns
+a=NS.rdf.type
 
 def triplifyGML(fname="foo.gml",fpath="./fb/",scriptpath=None,uid=None,sid=None,extra_info=None):
     """Produce a linked data publication tree from a standard GML file.
@@ -112,7 +114,7 @@ def triplifyGML(fname="foo.gml",fpath="./fb/",scriptpath=None,uid=None,sid=None,
                   NS.fb.sex,
                   NS.fb.agerank,NS.fb.wallcount]
         P.rdf.link([tg],ind, None,uris,data,draw=False)
-        P.rdf.link([tg],ind,None,[NS.po.snapshot],[snapshot],draw=False)
+        P.rdf.link_([tg],ind,None,[NS.po.snapshot],[snapshot],draw=False)
 
 
     #friends_=[fg2["friends"][i] for i in ("name","label","locale","sex","agerank")]
@@ -128,8 +130,7 @@ def triplifyGML(fname="foo.gml",fpath="./fb/",scriptpath=None,uid=None,sid=None,
     i=1
     for uid1,uid2 in fg2.edges():
         flabel="{}-{}-{}".format(aname,uid1,uid2)
-        ind=P.rdf.IC([tg],P.rdf.ns.fb.Friendship,
-                flabel)
+        ind=P.rdf.IC([tg],P.rdf.ns.fb.Friendship,flabel)
         uids=[P.rdf.IC(None,P.rdf.ns.fb.Participant,"{}-{}".format(aname,i)) for i in (uid1,uid2)]
         P.rdf.link_([tg],ind,flabel,[NS.po.snapshot]+[NS.fb.member]*2,
                                     [snapshot]+uids,draw=False)
